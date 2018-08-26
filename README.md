@@ -115,8 +115,7 @@ Once you've captured the pcap file, recover the payload by running PacketWhisper
 
 # Limitations / Use Notes
 
-<b>Not a secure encryption scheme.</b> PacketWhisper is not a secure encryption scheme. It's vulnerable to frequency analysis attacks. Use the 'Unique Random Subdomain FQDNs' category of ciphers to add entropy and help degrade frequency analysis attacks. If payload secrecy is required, be sure to encrypt the payload before transferring with PacketWhisper.
-
+<b>Not a secure encryption scheme.</b> PacketWhisper is not a secure encryption scheme. It's vulnerable to frequency analysis attacks. Use the 'Unique Random Subdomain FQDNs' category of ciphers to add entropy and help degrade frequency analysis attacks. If payload secrecy is required, be sure to encrypt the payload before using PacketWhisper to process it.
 
 <b>Not a high-bandwidth transfer method.</b> PacketWhisper relies on DNS queries, which are UDP-based, meaning order of delivery (or even successful delivery) of the request is not guranteed. For this reason, PacketWhisper adds a small (1 second or less) delay between each DNS query. You can safely transfer payloads at a rate of about 3.6K per hour (60 bytes per minute). That's based on the size of the original payload, not the Cloakified output file. You can double that rate of transfer by cutting the delay in half, but proceed carefully.
 
