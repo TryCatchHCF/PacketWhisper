@@ -122,7 +122,7 @@ Once you've captured the pcap file, recover the payload by running PacketWhisper
 
 And let's face it, if you have non-DNS modes of data transfer available, you can just use the main <a href="https://github.com/TryCatchHCF/Cloakify">Cloakify Toolset</a> project to hide the file in plain sight (maybe turn the payload into a list of PokemonGo monsters w/ LatLon coordinates) and use all that high bandwidth available via FTP/HTTP/etc. DNS is extremely useful when other protocols are blocked, but always be aware of your options.
 
-<b>DNS is DNS.</b> Different OS's have different DNS caching policies, etc. Networks may be down, isolated, etc. PacketWhisper includes a quick manual check to see if it can resolve common FQDNs, but just remember that DNS is a messy business. Remember the old IT troubleshooting mantra: "It's always DNS."
+<b>DNS is DNS.</b> Different OS's have different DNS caching policies, etc. Networks may be down, isolated, etc. PacketWhisper includes a quick manual check to see if it can resolve common FQDNs, but DNS is often a messy business. Remember the old IT troubleshooting mantra: "It's always DNS."
 
 
 # Detection / Prevention
