@@ -115,7 +115,7 @@ Once you've captured the pcap file, recover the payload by running PacketWhisper
 
 # Limitations / Use Notes
 
-<b>VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries (even if capturing on the same system). If you want to test out PacketWhisper, try transmitting from a virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
+<b>VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries unless you can capture upstream from the VPN exit node. Even capturing on the same system will fail. If you want to test out PacketWhisper, try transmitting from a hosted virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
 
 <b>Not a secure encryption scheme.</b> PacketWhisper is not a secure encryption scheme. It's vulnerable to frequency analysis attacks. Use the 'Unique Random Subdomain FQDNs' category of ciphers to add entropy and help degrade frequency analysis attacks. If payload secrecy is required, be sure to encrypt the payload before using PacketWhisper to process it.
 
