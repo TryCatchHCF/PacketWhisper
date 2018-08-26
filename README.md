@@ -33,7 +33,7 @@ Which shows up in network traffic as DNS queries like this:
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperNetworkTraffic.png></img>
 
 # Tutorial
-See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. The slides present background on DNS exfiltration, text-based steganography / Cloakify Toolset, and how PacketWhisper combines them all into a method for transferring data. I specifically created the slides to be useful on their own, so the background and information should be complete. However you can also view the video of my DC26 Packet Hacking Village presentation which provides additional context.
+See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. The slides present background on DNS exfiltration, text-based steganography / Cloakify Toolset, and how PacketWhisper combines them all into a method for transferring data. I specifically created the slides to be useful on their own, so the background and information should be complete. However you can also view the video of my DC26 Packet Hacking Village presentation which provides additional context. [NOTE: Video should be online sometime in September, at which points I'll add the URL here.]
 
 For a quick start on using PacketWhisper, see the cleverly titled file "README\_GETTING\_STARTED.txt" in the project for a walkthrough.
 
