@@ -45,6 +45,10 @@ For a quick start on using PacketWhisper, see the cleverly titled file "README\_
 
 <b>Answer:</b> I hate project dependencies in my operational tools. I keep my projects as atomic, self-contained as possible for maximum reliability, especially on the client side where I may not control the environment and/or have minimal privileges.
 
+<b>Question:</b> "Why isn't PacketWhisper a project fork of Cloakify Toolset?"
+
+<b>Answer:</b> Same answer as above. We only need a very specific subset of Cloakify's capabilities, and adding everything else to PacketWhisper would just lead to a cluttered directory and tools/ciphers that can't be used by PacketWhisper. Since I own both projects, I'm keeping any relevant changes synchronized between the two. (So far only some bug fixes for edge cases I uncovered.)
+
 # Run PacketWhisper
 $ python ./packetWhisper.py
 
