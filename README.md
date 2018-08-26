@@ -110,12 +110,12 @@ Example Points of Capture:<br>
 
 Use your imagination. Anywhere along the DNS resolution path is an option.
 
+<b>NOTE: VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries unless you can capture upstream from the VPN exit node. Even capturing on the same system will fail. Since many of you are probably using VPNs, if you want to test out PacketWhisper, try transmitting from a hosted virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
+
 # Extracting The Payload
 Once you've captured the pcap file, recover the payload by running PacketWhisper on a system that has tcpdump or WinDump installed. PacketWhisper will ask you which cipher was used, then extract the payload from the pcap, and finally decode the extracted payload with the matching cipher.
 
 # Limitations / Use Notes
-
-<b>VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries unless you can capture upstream from the VPN exit node. Even capturing on the same system will fail. If you want to test out PacketWhisper, try transmitting from a hosted virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
 
 <b>Not a secure encryption scheme.</b> PacketWhisper is not a secure encryption scheme. It's vulnerable to frequency analysis attacks. Use the 'Unique Random Subdomain FQDNs' category of ciphers to add entropy and help degrade frequency analysis attacks. If payload secrecy is required, be sure to encrypt the payload before using PacketWhisper to process it.
 
