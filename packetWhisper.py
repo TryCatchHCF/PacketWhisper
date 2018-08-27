@@ -55,7 +55,7 @@
 #   $ python packetWhisper.py 
 # 
 
-import os, sys, getopt, socket, random, datetime, cloakify, decloakify, packetWhisperBroadcast, packetWhisperCapture
+import os, sys, getopt, socket, random, datetime, cloakify, decloakify, packetWhisperBroadcast
 
 # Set name of knock sequence string (this is only used when transmitting Common FQDN ciphers)
 
@@ -574,8 +574,8 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag 
 	# corresponding cipher string to the cloaked payload file, because
 	# inference. \o/
 
-	for ( dnsQuery in dnsQueriesFile ):
-		for ( cipherElement in cipherFile ):
+	for dnsQuery in queries:
+		for cipherElement in cipherStrings:
 			if ( cipherElement in dnsQuery ):
 				if ( cipherTag == "" ) or ( cipherTag in dnsQuery ):
 					cloakedFile.write( cipherElement )
@@ -679,7 +679,7 @@ def ExtractCapturedPayload( pcapFile ):
 # 
 #========================================================================
 
-GetSourceIPViaKnockSequence( dnsQueriesFilename ):
+def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 
 	# WARNING: This is a duplicate hardcoded value of the string found
 	# in the file 'knockSequence.txt'. This is unclean. It will be fixed.
@@ -698,7 +698,7 @@ GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 		print ""
 		return
 
-	for ( dnsQuery in queries )
+	for dnsQuery in queries:
 
 		if ( knockSequenceStr in dnsQuery ):
 
