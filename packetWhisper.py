@@ -378,7 +378,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 	print "Adding subdomain randomization to cloaked file using :", scriptFilename
 
 	try:
-		os.system( "ciphers/subdomain_randomizer_scripts/%s %s %s" % ( scriptFilename, cloakedFile, "True" ))
+		os.system( "ciphers/subdomain_randomizer_scripts/%s %s %s" % ( scriptFilename, cloakedFile ))
 
 	except:
 		print ""
