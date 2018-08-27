@@ -14,46 +14,31 @@
 
 import os, sys, getopt, random
 
-if ( len(sys.argv) != 3 ):
+if ( len(sys.argv) != 2 ):
 
-	print "usage: log_optimizely_prefixes.py <cloakedFilename> <True/False>"
+	print "usage: log_optimizely_prefixes.py <cloakedFilename>"
 	print
 	exit
 
 else:
 
-	if ( sys.argv[ 2 ] == "True" ):
+    with open( sys.argv[1], "r" ) as file:
 
-		with open( sys.argv[1], "r" ) as file:
+            cloakedFile = file.read().splitlines()
 
-    			cloakedFile = file.read().splitlines()
+    with open( sys.argv[1], "w" ) as file:
 
-		with open( sys.argv[1], "w" ) as file:
+        for i in cloakedFile:
 
-			for i in cloakedFile:
+            count = 0
+            subdomainNoise = ""
 
-				count = 0
-				subdomainNoise = ""
+            while ( count < 5 ):
+                subdomainNoise = subdomainNoise + str(random.randint(0,9))
+                count = count + 1
 
-				while ( count < 5 ):
-					subdomainNoise = subdomainNoise + str(random.randint(0,9))
-					count = count + 1
+            subdomainNoise = subdomainNoise + ".log.optimizely.com"
 
-				subdomainNoise = subdomainNoise + ".log.optimizely.com"
+            file.write( i + subdomainNoise + "\n" )
 
-				file.write( i + subdomainNoise + "\n" )
-
-	elif ( sys.argv[ 2 ] == "False" ):
-
-		with open( sys.argv[1], "r" ) as file:
-
-    			cloakedFile = file.readlines()
-
-		with open( sys.argv[1], "w" ) as file:
-
-			for i in cloakedFile:
-				print i[:6]
-	
-	else:
-		print ""
-		print "Invalid option:", sys.argv[ 2 ]
+return

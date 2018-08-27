@@ -17,46 +17,31 @@ import os, sys, getopt, random
 
 gCharList = "abcdefghijklmnopqrstuvwxyz0123456789"
 
-if ( len(sys.argv) != 3 ):
+if ( len(sys.argv) != 2 ):
 
-	print "usage: akstat_io_prefixes.py <cloakedFilename> <True/False>"
+	print "usage: akstat_io_prefixes.py <cloakedFilename>"
 	print
 	exit
 
 else:
 
-	if ( sys.argv[ 2 ] == "True" ):
+    with open( sys.argv[1], "r" ) as file:
 
-		with open( sys.argv[1], "r" ) as file:
+            cloakedFile = file.read().splitlines()
 
-    			cloakedFile = file.read().splitlines()
+    with open( sys.argv[1], "w" ) as file:
 
-		with open( sys.argv[1], "w" ) as file:
+        for i in cloakedFile:
+            
+            count = 0
+            subdomainNoise = ""
 
-			for i in cloakedFile:
+            while ( count < 4 ):
+                subdomainNoise = subdomainNoise + gCharList[ (random.randint(0,35)) ]
+                count = count + 1
+                    
+            subdomainNoise = subdomainNoise + ".akstat.io"
 
-				count = 0
-				subdomainNoise = ""
+            file.write( i + subdomainNoise + "\n" )
 
-				while ( count < 4 ):
-					subdomainNoise = subdomainNoise + gCharList[ (random.randint(0,35)) ]
-					count = count + 1
-
-				subdomainNoise = subdomainNoise + ".akstat.io"
-
-				file.write( i + subdomainNoise + "\n" )
-
-	elif ( sys.argv[ 2 ] == "False" ):
-
-		with open( sys.argv[1], "r" ) as file:
-
-    			cloakedFile = file.readlines()
-
-		with open( sys.argv[1], "w" ) as file:
-
-			for i in cloakedFile:
-				print i[:4]
-	
-	else:
-		print ""
-		print "Invalid option:", sys.argv[ 2 ]
+    return
