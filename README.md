@@ -106,9 +106,11 @@ Example Points of Capture:<br>
 - Network infrastructure outside of the organization<br>
 - Network tap anywhere along the query path<br>
 
-Use your imagination. Anywhere along the DNS resolution path is an option.
-
 <b>NOTE: VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries unless you can capture upstream from the VPN exit node. Even capturing on the same system will fail. Since many of you are probably using VPNs, if you want to test out PacketWhisper, try transmitting from a hosted virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
+
+Use your imagination. Any device along the DNS resolution path is an option, including wall displays.
+
+<img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperWallDisplayCapture.png></img>
 
 # Extracting The Payload
 Once you've captured the pcap file, recover the payload by running PacketWhisper on a system that has tcpdump (included on Linux & MacOS) or <a href="https://www.winpcap.org">WinDump</a> (Windows) installed. PacketWhisper will ask you which cipher was used, then extract the payload from the pcap, and finally decode the extracted payload with the matching cipher.
