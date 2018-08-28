@@ -40,6 +40,8 @@ We're using DNS queries to transfer the data, not successful DNS lookups. Packet
 
 See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. The slides present background on DNS exfiltration, text-based steganography / Cloakify Toolset, and how PacketWhisper combines them all into a method for transferring data. I specifically created the slides to be useful on their own, so the background and information should be complete. However you can also view the video of my DC26 Packet Hacking Village presentation which provides additional context. [NOTE: Video should be online sometime in September, at which points I'll add the URL here.]
 
+As a quick test, run PacketWhisper from a VM, then send a file while doing a packet capture on the VM's network interface via the host system. You can then load the PCAP file into whichever PacketWhisper instance is convenient to decode the file. Just remember it's not a speedy transfer. Smaller files and patience are your friend.
+
 # Requires
 
 1) Python 2.7.x (3.6.x port is underway)<br>
