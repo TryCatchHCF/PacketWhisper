@@ -28,7 +28,7 @@ Into a list of FQDNs like this:
 
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperWorkflow.png></img>
 
-Which shows up in network traffic as DNS queries like this:
+Which PacketWhisper turns into DNS queries that show up in network traffic like this:
 
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperNetworkTraffic.png></img>
 
