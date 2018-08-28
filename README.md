@@ -133,3 +133,5 @@ See the DEF CON 26 slides (included in project) from my Packet Hacking Village p
 # Roadmap
 I'll be adding modes for MDNS and LLMNR local network DNS broadcast modes. These are intended to be used by systems connected to the same local network, and will remove the need for the capturing device to have access to Promiscuous Mode when performing wifi packet captures. (Those protocols send traffic to x.y.z.255 on the host network, broadcasting traffic to all other systems on the same local network.)
 
+I'll also add more ciphers, but for day-to-day needs the current cipher collection is all I've ever needed. You'll get good mileage out of them.
+
