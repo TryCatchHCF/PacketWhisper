@@ -14,7 +14,7 @@ What if data could be transferred using the target's own whitelisted DNS servers
 # How It Works
 To make it all happen, PacketWhisper combines DNS queries with text-based steganography. Leveraging the <a href="https://github.com/TryCatchHCF/Cloakify">Cloakify Toolset</a>, it transforms the payload into a list of FQDN strings. PacketWhisper then uses the list of FQDNs to create sequential DNS queries, transferring the payload across (or within) network boundaries, with the data hidden in plain sight, and without the two systems ever directly connecting to a each other or to a common endpoint. The ciphers used by PacketWhisper provide multiple levels of deception to avoid generating alerts as well as to mislead analysis attempts.
 
-To receive the data, you capture the network traffic containing the DNS queries, using whatever method is most convenient for you. (See "Capturing The PCAP File" below for examples of capture points.) You then load the captured PCAP file into PacketWhisper, which extracts the payload from the file and Decloakifies it into its original form.
+To receive the data, you capture the network traffic containing the DNS queries, using whatever method is most convenient for you. (See "Capturing The PCAP File" below for examples of capture points.) You then load the captured PCAP file into PacketWhisper (running on whatever system is convenient), which extracts the payload from the file and Decloakifies it into its original form.
 
 DNS is an attractive protocol to use because, even though it's a relatively slow means of transferring data, DNS is almost always allowed across network boundaries, even on the most sensitive networks.
 
