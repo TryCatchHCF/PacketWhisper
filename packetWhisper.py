@@ -64,11 +64,15 @@ import os, sys, getopt, socket, re, random, datetime, cloakify, decloakify
 gKnockSequenceFilename = "knockSequence.txt"
 gCommonFQDNCipherSelected = False
 
+gFilepathRandomizedSubdomainFQDN = "ciphers/subdomain_randomizer_scripts/"
+gFilepathRepeatedUniqueFQDN = "ciphers/repeated_unique_fqdn/"
+gFilepathCommonFQDN = "ciphers/common_fqdn/"
+
 # Load lists of FQDN-based ciphers
 
-gRepeatedSubdomainFQDNCipherFiles = next(os.walk("./ciphers/repeated_unique_fqdn/"))[2]
-gCommonFQDNCipherFiles = next(os.walk("./ciphers/common_fqdn"))[2]
-gRandomSubdomainFQDNCipherFiles = next(os.walk("./ciphers/subdomain_randomizer_scripts/"))[2]
+gRandomSubdomainFQDNCipherFiles = next(os.walk( gFilepathRandomizedSubdomainFQDN ))[2]
+gRepeatedSubdomainFQDNCipherFiles = next(os.walk( gFilepathRepeatedUniqueFQDN ))[2]
+gCommonFQDNCipherFiles = next(os.walk( gFilepathCommonFQDN ))[2]
 
 # Kludge Alert: ("Really, TryCatchHCF? We're not even in the first function yet!"
 # Yeah, I know. So, back to the kludge - various files are co-resident in the 
@@ -83,7 +87,7 @@ for dirFile in gRandomSubdomainFQDNCipherFiles:
 # Load list of FQDN Subdomain Randomizer scripts
 
 gSubdomainRandomizerScripts = []
-for root, dirs, files in os.walk( "./ciphers/subdomain_randomizer_scripts/" ):
+for root, dirs, files in os.walk( gFilepathRandomizedSubdomainFQDN ):
         for file in files:
                 if file.endswith('.py'):
                         gSubdomainRandomizerScripts.append( file )
@@ -366,7 +370,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 
 	cipherNum = SelectCipher( gRandomSubdomainFQDNCipherFiles )
 
-	cipherFilePath = "ciphers/subdomain_randomizer_scripts/" + gRandomSubdomainFQDNCipherFiles[ cipherNum ] 
+	cipherFilePath = gFilepathRandomizedSubdomainFQDN + gRandomSubdomainFQDNCipherFiles[ cipherNum ] 
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
 
@@ -411,7 +415,7 @@ def SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile ):
 
 	cipherNum = SelectCipher( gRepeatedSubdomainFQDNCipherFiles )
 
-	cipherFilePath = "ciphers/repeated_unique_fqdn/" + gRepeatedSubdomainFQDNCipherFiles[ cipherNum ] 
+	cipherFilePath = gFilepathRepeatedUniqueFQDN + gRepeatedSubdomainFQDNCipherFiles[ cipherNum ] 
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
 
@@ -439,7 +443,7 @@ def SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile ):
 
 	cipherNum = SelectCipher( gCommonFQDNCipherFiles )
 
-	cipherFilePath = "ciphers/common_fqdn/" + gCommonFQDNCipherFiles[ cipherNum ] 
+	cipherFilePath = gFilepathCommonFQDN + gCommonFQDNCipherFiles[ cipherNum ] 
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
 
@@ -700,23 +704,22 @@ def ExtractCapturedPayload():
 	print ""
 	print "What OS are you currently running on?"
 	print ""
-	print "1) Windows"
-	print "2) Linux/Unix/MacOS"
+	print "1) Linux/Unix/MacOS"
+	print "2) Windows"
 	print ""
 	osHost = raw_input( "Select OS [1 or 2]: " )
 
-	if osHost == "1":
+	if osHost == "2":
 		osStr = "Windows"
 	else:
 		osStr = "Linux"
 
 	dnsQueriesFilename = ExtractDNSQueriesFromPCAP( pcapFile, osStr );
 
-	cipherNum = SelectCipher( gRandomSubdomainFQDNCipherFiles )
+	cipherFilePath = SelectCipherForExtraction()
 
-	cipherFilePath = "ciphers/subdomain_randomizer_scripts/" + gRandomSubdomainFQDNCipherFiles[ cipherNum ] 
-
-	print "Extracting payload from PCAP using cipher:", gRandomSubdomainFQDNCipherFiles[ cipherNum ]
+	print ""
+	print "Extracting payload from PCAP using cipher:", cipherFilePath
 	print ""
 
 	# cipherTag is extra identifying information associated with an FQDN cipher.
@@ -766,6 +769,71 @@ def ExtractCapturedPayload():
 	DecloakifyFile( cloakedFile, cipherFilePath )
 
 	return
+
+
+
+
+#========================================================================
+#
+# SelectCipherForExtraction()
+#
+# This is a bit redundant to the function that selects FQDN cipher for
+# Cloakifying and transmitting the payload, but for now those two workflows
+# do not share code. Will refactor for cleaner design in the next update.
+#
+# In the meantime, having two different flows allows me to tailor the 
+# menu for better user context.
+#
+#========================================================================
+
+def SelectCipherForExtraction():
+
+	selectionErrorMsg = "1-3 are your options. Try again."
+	cipherFilePath = ""
+	notDone = 1
+
+	while ( notDone ): 
+
+		print ""
+		print "=======  Select PacketWhisper Cipher Used For Transfer  ======="
+		print ""
+		print "1) Random Subdomain FQDNs  (example: d1z2mqljlzjs58.cloudfront.net)"
+		print "2) Unique Repeating FQDNs  (example: John.Whorfin.yoyodyne.com)"
+		print "3) Common Website FQDNs    (example: www.youtube.com)"
+		print ""
+	
+		invalidSelection = 1
+	
+		while ( invalidSelection ):
+			try:
+				choice = int( raw_input( "Selection: " ))
+	
+				if ( choice > 0 and choice < 4 ):
+					invalidSelection = 0
+				else:
+					print selectionErrorMsg
+	
+			except ValueError:
+				print selectionErrorMsg
+
+		if choice == 1:
+			cipherNum = SelectCipher( gRandomSubdomainFQDNCipherFiles )
+			cipherFilePath = gFilepathRandomizedSubdomainFQDN + gRandomSubdomainFQDNCipherFiles[ cipherNum ]
+			notDone = 0
+		elif choice == 2:
+			cipherNum = SelectCipher( gRepeatedSubdomainFQDNCipherFiles )
+			cipherFilePath = gFilepathRepeatedUniqueFQDN + gRepeatedSubdomainFQDNCipherFiles[ cipherNum ]
+			notDone = 0
+		elif choice == 3:
+			cipherNum = SelectCipher( gCommonFQDNCipherFiles )
+			cipherFilePath = gFilepathCommonFQDN + gCommonFQDNCipherFiles[ cipherNum ]
+			notDone = 0
+		elif choice == 4:
+			ModeHelp()
+		else:
+			print selectionErrorMsg
+
+	return cipherFilePath
 
 
 
@@ -1088,7 +1156,7 @@ def MainMenu():
 	while ( notDone ): 
 
 		print ""
-		print "====  Packet Main Menu  ===="
+		print "====  PacketWhisper Main Menu  ===="
 		print ""
 		print "1) Transmit File via DNS"
 		print "2) Extract File from PCAP"
