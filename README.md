@@ -133,5 +133,7 @@ See the DEF CON 26 slides (included in project) from my Packet Hacking Village p
 # Roadmap
 I'll be adding modes for MDNS and LLMNR local network DNS broadcast modes. These are intended to be used by systems connected to the same local network, and will remove the need for the capturing device to have access to Promiscuous Mode when performing wifi packet captures. (Those protocols send traffic to x.y.z.255 on the host network, broadcasting traffic to all other systems on the same local network.)
 
+User-selectable rates of transfer will happen. For my own needs, 0.5 second delays between DNS queries has been reliable. I'm first gathering data on how narrow that gap can be without risking the payload. Also, slowing down the transfer more can improve stealth.
+
 I'll also add more ciphers, but for day-to-day needs the current cipher collection is all I've ever needed. You'll get good mileage out of them.
 
