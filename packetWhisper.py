@@ -234,7 +234,7 @@ def CloakifyPayload( sourceFile, cloakedFile, cipherFilePath ):
 
 def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 
-	selectionErrorMsg = "1-5 are your options. Try again."
+	selectionErrorMsg = "1-4 are your options. Try again."
 	cipherFilePath = ""
 	notDone = 1
 
@@ -247,7 +247,6 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 		print "2) Unique Repeating FQDNs  (DNS may cache, but overcomes NAT)"
 		print "3) Common Website FQDNs    (DNS caching may block, NAT interferes)"
 		print "4) Help"
-		print "5) Exit"
 		print ""
 	
 		invalidSelection = 1
@@ -256,7 +255,7 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 			try:
 				choice = int( raw_input( "Selection: " ))
 	
-				if ( choice > 0 and choice < 6 ):
+				if ( choice > 0 and choice < 5 ):
 					invalidSelection = 0
 				else:
 					print selectionErrorMsg
@@ -275,9 +274,6 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 			notDone = 0
 		elif choice == 4:
 			ModeHelp()
-		elif choice == 5:
-			cipherFilePath = ""
-			notDone = 0
 		else:
 			print selectionErrorMsg
 
@@ -721,6 +717,7 @@ def ExtractCapturedPayload():
 	cipherFilePath = "ciphers/subdomain_randomizer_scripts/" + gRandomSubdomainFQDNCipherFiles[ cipherNum ] 
 
 	print "Extracting payload from PCAP using cipher:", gRandomSubdomainFQDNCipherFiles[ cipherNum ]
+	print ""
 
 	# cipherTag is extra identifying information associated with an FQDN cipher.
 	# Necessary in cases where there is a risk of duplicate substrings in the
@@ -842,7 +839,6 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 def DecloakifyFile( cloakedFile, cipherFilePath ):
 
 	decloakedFile = raw_input( "Save decloaked data to filename (default: 'decloaked.file'): " )
-	print ""
 
 	if decloakedFile == "":
 		decloakedFile = "decloaked.file"
@@ -851,7 +847,8 @@ def DecloakifyFile( cloakedFile, cipherFilePath ):
 		decloakify.Decloakify( cloakedFile, cipherFilePath, decloakedFile )
 
 		print ""
-		print "File", cloakedFile, "decloaked and saved to", decloakedFile
+		print "File '" + cloakedFile + "' decloaked and saved to '" + decloakedFile + "'"
+		print ""
 	except:
 		print ""
 		print "!!! Oh noes! Error decloaking file (did you select the same cipher it was cloaked with?)"
@@ -891,9 +888,9 @@ def TestDNSAccess():
 		os.system( commandStr )
 
 	except:
-		print "!!! Warning: Not able to resolve hostname " + testFQDNStr
+		print "!!! Warning: Error while calling 'nslookup'"
 		print ""
-		print "!!! Outgoing DNS queries may be blocked. If so, PacketWhisper transfer will fail."
+		print "!!! PacketWhisper transfer will likely fail."
 		print ""
 
 	choice = raw_input("Press return to continue... ")
