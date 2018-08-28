@@ -67,15 +67,13 @@ These ciphers mimic the formats of various services that rely on complex subdoma
 
 The first part of the subdomain name is actually a string from the cipher list. The rest of the subdomain name is randomized to make each FQDN unique, which prevents DNS caching from shutting down the DNS query path prematurely. We then add the domain name. We construct the FQDNs this way to look like the usual FQDNs associated with the selected domain, to blend in better with normal webtraffic seen on any network.
 	
-Example FQDN:  d1z2mqljlzjs58.cloudfront.net
-
+<img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/FQDN_cipher1.png></img>
 
 <b>Unique Repeating FQDNs</b>
 
 Created to stand out from all other DNS queries on the network, but without any randomization involved. This means that DNS caching may interfere, but as a side benefit your DNS queries will be easy for you to find even in the largest collection of multi-client pcaps. This is due to the fact that the FQDNs are odd endpoints, like the list of "Johns" (Red Lectroid aliens) at the fictional Yoyodyne Propulsion Systems from the movie 'Buckaroo Banzai Across the 8th Dimension'.
 
-Example FQDN:  John.Whorfin.yoyodyne.com
-
+<img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/FQDN_cipher2.png></img>
 
 <b>Common Website FQDNs</b>
 
