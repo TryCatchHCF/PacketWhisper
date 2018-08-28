@@ -6,6 +6,8 @@
 #
 # Author:  Joe Gervais (TryCatchHCF)
 #
+# Project Home: https://github.com/TryCatchHCF/PacketWhisper
+#
 # Summary:  Combines text-based steganography (via Cloakify) and DNS queries
 # to exfiltrate / transfer data to any system that is able to capture a copy
 # of the DNS queries along the DNS resolution path. Captured pcap can then be
@@ -64,9 +66,19 @@ gCommonFQDNCipherSelected = False
 
 # Load lists of FQDN-based ciphers
 
-gRandomSubdomainFQDNCipherFiles = next(os.walk("./ciphers/subdomain_randomizer_scripts/"))[2]
 gRepeatedSubdomainFQDNCipherFiles = next(os.walk("./ciphers/repeated_unique_fqdn/"))[2]
 gCommonFQDNCipherFiles = next(os.walk("./ciphers/common_fqdn"))[2]
+gRandomSubdomainFQDNCipherFiles = next(os.walk("./ciphers/subdomain_randomizer_scripts/"))[2]
+
+# Kludge Alert: ("Really, TryCatchHCF? We're not even in the first function yet!"
+# Yeah, I know. So, back to the kludge - various files are co-resident in the 
+# subdomain_randomizer_scripts/ directory, and we just read them all in. The actual
+# cipher files lack a "." anywhere in their filename, so if we remove all filenames 
+# that contain ".", we'll have a list of only ciphers for the user to pick from.
+
+for dirFile in gRandomSubdomainFQDNCipherFiles:
+	if "." in dirFile:
+		gRandomSubdomainFQDNCipherFiles.remove( dirFile )
 
 # Load list of FQDN Subdomain Randomizer scripts
 
@@ -527,10 +539,6 @@ def GenerateDNSQueries( cloakedFile ):
 	return
 
 
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-## CRITICAL NOTE: USE DNS QUERY'S "Transaction ID: 0xda90" TO STRIP DUPLICATE REQUESTS
-## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 #========================================================================
 #
 # ExtractDNSQueriesFromPCAP( pcapFile, osStr )
@@ -875,22 +883,9 @@ def TestDNSAccess():
 		testFQDNStr = defaultFQDNStr
 
 	try:
-		#addr = socket.gethostbyname( testFQDNStr )
-
 		commandStr = "nslookup " + testFQDNStr
 
 		os.system( commandStr )
-
-		if addr == "":
-			print "!!! Warning: Not able to resolve hostname " + testFQDNStr
-			print ""
-			print "!!! Outgoing DNS queries may be blocked. If so, PacketWhisper transfer will fail."
-			print ""
-		else:
-			print testFQDNStr + " resolved to " + addr
-			print ""
-			print "DNS queries are open, PacketWhisper should be able to transfer data."
-			print ""
 
 	except:
 		print "!!! Warning: Not able to resolve hostname " + testFQDNStr
@@ -942,6 +937,12 @@ def SelectCipher( cipherFiles ):
 
 
 #========================================================================
+#
+# Help()
+#
+# Mostly a rehash of the other documentation, but always nice to have it
+# handy within the tool while you're running it.
+#
 #========================================================================
 
 def Help():
@@ -952,7 +953,8 @@ def Help():
 	print ""
 	print "=====================  Using PacketWhisper  ====================="
 	print ""
-
+	print "Project Home: https://github.com/TryCatchHCF/PacketWhisper"
+	print ""
 	print "Summary:  Combines text-based steganography (via Cloakify) and DNS queries"
 	print "to exfiltrate / transfer data to any system that is able to capture a copy"
 	print "of the DNS queries along the DNS resolution path. Captured pcap can then be"
@@ -962,6 +964,10 @@ def Help():
 	print "Primary use cases are defeating attribution (no direct connection to an"
 	print "attacker-controlled destination is ever required) and stealthy exfiltration"
 	print "when all other services are unavailable."
+	print ""
+	print "Be sure to read the slide presentation (PDF) included with the project."
+	print "It will give you a good overview of the key concepts, as well as use"
+	print "cases, and issues / defender mitigations that may get in your way."
 	print ""
 	print "Description:"
 	print ""
@@ -973,14 +979,23 @@ def Help():
 	print "propagates the DNS query along the DNS resolution path."
 	print ""
 	print "To capture the data, you just need visibility of the network traffic along"
-	print "the DNS resolution path, which can of course include a simple connected"
-	print "system capturing in promiscuous mode, or access to network appliances along"
-	print "the route, including external to the network / organization of origination."
+	print "the DNS resolution path, which can be as simple as a connected system"
+	print "capturing in promiscuous mode (wifi), IoT devices, or access to network"
+	print "appliances along the DNS query path, including external to the organization"
+	print "of origination."
 	print ""
 	print "The captured pcap file is then loaded into packetWhisper, which parses"
 	print "the pcap using the matching cipher used to encode during transmission."
 	print "The ciphered data is extracted from the pcap and then Decloakified to"
 	print "restore the file to its original form."
+	print ""
+	print "=====  NOTE: VPNs Will Prevent Access To DNS Queries  ====="
+	print " "
+	print " If the transmitting system is using a VPN, then none of the DNS queries"
+	print " will be available unless your point of capture is upstream from the VPN"
+	print " exit node. That's obvious, but it also means if you're testing on your"
+	print " own system and running a VPN, you'll be capturing an empty PCAP file."
+	print " Always verify your PCAP capture settings and outputs."
 	print ""
 	print "=====  NOTE: NOT A HIGH-BANDWIDTH TRANSFER METHOD  ====="
 	print ""
@@ -997,6 +1012,8 @@ def Help():
 #========================================================================
 #
 # PrintBanner()
+#
+# It just wouldn't be a proper tool without an ASCII splash screen.
 #
 #========================================================================
 
@@ -1019,8 +1036,8 @@ def PrintBanner():
 	print "         \           https://github.com/TryCatchHCF"
 	print "  (\~---."
 	print "  /   (\-`-/)"
-	print " (      ' '  )         data.xls image.jpg  \\     Series of "
-	print "  \ (  \_Y_/\\    ImADolphin.exe backup.zip  -->  harmless-looking "
+	print " (      ' '  )        data.xls accounts.txt  \\     Series of "
+	print "  \ (  \_Y_/\\        device.cfg  backup.zip  -->  harmless-looking "
 	print "   \"\"\ \___//         LoadMe.war file.doc  /     DNS queries "
 	print "      `w   \""   
 
@@ -1030,8 +1047,6 @@ def PrintBanner():
 #========================================================================
 #
 # MainMenu()
-#
-# It just wouldn't be a proper tool without an ASCII splash menu.
 #
 #========================================================================
 
