@@ -130,7 +130,8 @@ PacketWhisper is not a secure encryption scheme. It's vulnerable to frequency an
 
 =====  Not a high-bandwidth transfer method =====
 
-PacketWhisper relies on DNS queries, which are UDP-based, meaning order of delivery (or even successful delivery) of the request is not guranteed. For this reason, PacketWhisper adds a small (1 second or less) delay between each DNS query. You can safely transfer payloads at a rate of about 3.6K per hour (60 bytes per minute). That's based on the size of the original payload, not the Cloakified output file. You can double that rate of transfer by cutting the delay in half, but proceed carefully.
+PacketWhisper relies on DNS queries, which are UDP-based, meaning order of delivery (or even successful delivery) of the request is not guranteed. For this reason, PacketWhisper adds a small (1 second or less) delay between each DNS query. You can safely transfer payloads at a rate of about 7.2K per hour (120 bytes per minute). That's based on the size of the original payload, not the Cloakified output file. After I gather more data on reliability vs. speed, I'll be adding a selection of data rates for the user to choose from.
+
 
 And let's face it, if you have non-DNS modes of data transfer available, you can just use the main <a href="https://github.com/TryCatchHCF/Cloakify">Cloakify Toolset</a> project to hide the file in plain sight (maybe turn the payload into a list of PokemonGo monsters w/ LatLon coordinates) and use all that high bandwidth available via FTP/HTTP/etc. DNS is extremely useful when other protocols are blocked, but always be aware of your options.
 
