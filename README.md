@@ -32,7 +32,7 @@ Which PacketWhisper turns into DNS queries that show up in network traffic like 
 
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperNetworkTraffic.png></img>
 
-Which you capture as a PCAP file and load into your local copy of PacketWhisper to recover the payload:
+Which you capture as a PCAP file anywhere along the DNS resolution path, and then load that PCAP into your local copy of PacketWhisper to recover the payload:
 
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperExtractPayload.png></img>
 
