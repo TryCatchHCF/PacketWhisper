@@ -41,13 +41,13 @@ For a quick start on using PacketWhisper, see the cleverly titled file "README\_
 1) Python 2.7.x (3.6.x port is underway)<br>
 2) For decoding payloads: tcpdump (included on Linux & MacOS) or <a href="https://www.winpcap.org">WinDump</a> (Windows)
 
-<b>Question:</b> "Why didn't you use Scapy?"
+<b>Question:</b> "Why didn't you use Scapy or dnspython toolset?"
 
-<b>Answer:</b> I hate project dependencies in my operational tools. I keep my projects as atomic, self-contained as possible for maximum reliability, especially on the client side where I may not control the environment and/or have minimal privileges.
+<b>Answer:</b> I hate project dependencies in my operational tools. I keep my projects as atomic, self-contained as possible for maximum reliability, especially on the client side where I may not control the environment and/or have minimal privileges. The way PacketWhisper is structured, I can get it running on a limited shell host just by tar'ing up the project and extracting on the target host.
 
 <b>Question:</b> "Why isn't PacketWhisper a project fork of Cloakify Toolset?"
 
-<b>Answer:</b> Same answer as above. We only need a very specific subset of Cloakify's capabilities, and adding everything else to PacketWhisper would just lead to a cluttered directory and tools/ciphers that can't be used by PacketWhisper. Since I own both projects, I'm keeping any relevant changes synchronized between the two. (So far only some bug fixes for edge cases I uncovered.)
+<b>Answer:</b> Same answer as above. We only need a very specific subset of Cloakify's capabilities, and adding everything else to PacketWhisper would just lead to a cluttered directory and tools/ciphers that can't be used by PacketWhisper. Since I own both projects, I promise to synchronize any changes between the two.
 
 # Run PacketWhisper
 $ python packetWhisper.py
