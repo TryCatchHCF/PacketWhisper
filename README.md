@@ -127,7 +127,7 @@ And let's face it, if you have non-DNS modes of data transfer available, you can
 
 
 # Detection / Prevention
-See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. Mitigation strategies are covered toward the end of the presentation. As in all things, "Security In Depth" is your friend.
+See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. Mitigation strategies are covered toward the end of the presentation. As in all things, "Security In Depth" is your friend, especially since DNS resolution paths span vast amounts of terrain that are outside of your organization's control.
 
 
 # Roadmap
