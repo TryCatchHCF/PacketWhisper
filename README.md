@@ -88,10 +88,6 @@ Since Common Website ciphers only have the source IP address as a way to disting
 Example FQDN:  www.github.com
 
 
-# Sample Cipher Gallery
-<img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/CipherGallery1.png></img>
-<img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/CipherGallery2.png></img>
-
 # Transmitting the Cloakified Payload
 Once you've selected a cipher, PacketWhisper encodes (Cloakifies) the payload into a list of FQDN strings per the desired cipher. It then sequentially generates DNS requests to send the data along the DNS resolution path. PacketWhisper adds a small delay between each DNS query, which helps prevent out-of-order DNS requests.
 
