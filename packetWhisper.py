@@ -664,11 +664,18 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag 
 #
 # ExtractCapturedPayload()
 #
-#
+# High level function that coordinates selecting the FQDN cipher that was
+# used, loading the PCAP file, extracting the Cloakified payload from the
+# PCAP, and the Decloakifying the payload to restore the exfiltrated file.
 #
 #========================================================================
 
 def ExtractCapturedPayload():
+
+	# Kludge Alert: Yeah, I'm not proud of these brittle hardcoded
+	# strings, but it's an easy way to identify which cipher tag
+	# we'll need to use to help avoid false matches when extracting
+	# our payloads
 
 	cloudfrontStr = "cloudfront.net"
 	akstatStr = "akstat.io"
@@ -677,14 +684,24 @@ def ExtractCapturedPayload():
 
 	pcapTextFilename = "tempPcapFile.txt"
 
-	#DEBUG
-	osStr = "Linux"
+	osStr = ""
 
 	print ""
 	print "====  Extract & Decloakify a Cloaked File  ===="
 	print ""
 	pcapFile = raw_input( "Enter PCAP filename: " )
 	print ""
+	print "What OS are you currently running on?"
+	print ""
+	print "1) Windows"
+	print "2) Linux/Unix/MacOS"
+	print ""
+	osHost = raw_input( "Select OS [1 or 2]: " )
+
+	if osHost == "1":
+		osStr = "Windows"
+	else:
+		osStr = "Linux"
 
 	dnsQueriesFilename = ExtractDNSQueriesFromPCAP( pcapFile, osStr );
 
@@ -748,6 +765,11 @@ def ExtractCapturedPayload():
 #
 # GetSourceIPViaKnockSequence( dnsQueriesFile )
 #
+# Extracts the source IP address of the system that queried for the 
+# knock sequence. We then use that value as the cipher tag while
+# extracting Common FQDN ciphers from the PCAP file, since otherwise
+# we'd have no idea how to tell the difference between all those other 
+# systems querying for common FQDNs. 
 # 
 #========================================================================
 
@@ -763,22 +785,35 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 	try:
 		with open( dnsQueriesFilename ) as queriesFile:
     			queries = queriesFile.readlines()
+
+		queriesFile.close()
+
 	except:
 		print ""
 		print "!!! Oh noes! Problem reading '", dnsQueriesFile, "'"
-		print "!!! Verify the location of the cipher file" 
+		print "!!! Verify the location of the DNS queries file" 
 		print ""
 		return
 
 	for dnsQuery in queries:
 
-		if ( knockSequenceStr in dnsQuery ):
+		found = re.search(r"A\? " + knockSequenceStr + "?", dnsQuery)
 
-			# Extract substring containing source IP address
+			# Found the knock sequence in the DNS queries
+			# Extract and return the source IP address 
+
+		if found:
+
+			queryFields = dnsQuery.split()
+			ipAddr = queryFields[ 2 ].split( '.' )
+			sourceIPAddrStr = ipAddr[ 0 ] + "." + ipAddr[ 1 ] + "." + ipAddr[ 2 ] + "." + ipAddr[ 3 ]
+
 			# DEBUG
 			print dnsQuery
+			print sourceIPAddrStr
 
-	queriesFile.close()
+			# Generally not a fan of returns within loops, but here we are...
+			return sourceIPAddrStr
 	
 	return sourceIPAddrStr
 
@@ -788,6 +823,8 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 #
 # DecloakifyFile( cloakedFile, cipherFilePath )
 #
+# Straightforward call to Decloakify to restore the payload to its
+# original form.
 # 
 #========================================================================
 
