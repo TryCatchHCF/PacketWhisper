@@ -117,6 +117,8 @@ Once you've captured the pcap file, recover the payload by running PacketWhisper
 
 # Limitations / Use Notes
 
+<b>Be sure your PCAP file is actually PCAP format. If you used tcpdump or WinDump to capture the file you'll be fine. Wireshark however offers a wide variety of "Save As..." options for saving Wireshark traffic, only one of which is actually tcpdump/PCAP friendly. I'm working on better error reporting to help catch mistakes early.
+
 <b>Not a secure encryption scheme.</b> PacketWhisper is not a secure encryption scheme. It's vulnerable to frequency analysis attacks. Use the 'Unique Random Subdomain FQDNs' category of ciphers to add entropy and help degrade frequency analysis attacks. If payload secrecy is required, be sure to encrypt the payload before using PacketWhisper to process it.
 
 <b>Not a high-bandwidth transfer method.</b> PacketWhisper relies on DNS queries, which are UDP-based, meaning order of delivery (or even successful delivery) of the request is not guranteed. For this reason, PacketWhisper adds a small (1/2-second) delay between each DNS query. You can safely transfer payloads at a rate of about 7.2K per hour (120 bytes per minute). That's based on the size of the original payload, not the Cloakified output file. After I gather more data on reliability vs. speed, I'll be adding a selection of data rates for the user to choose from.
