@@ -70,27 +70,35 @@ gFilepathCommonFQDN = "ciphers/common_fqdn/"
 
 # Load lists of FQDN-based ciphers
 
-gRandomSubdomainFQDNCipherFiles = next(os.walk( gFilepathRandomizedSubdomainFQDN ))[2]
 gRepeatedSubdomainFQDNCipherFiles = next(os.walk( gFilepathRepeatedUniqueFQDN ))[2]
+gRepeatedSubdomainFQDNCipherFiles.sort()
+
 gCommonFQDNCipherFiles = next(os.walk( gFilepathCommonFQDN ))[2]
+gCommonFQDNCipherFiles.sort()
 
 # Kludge Alert: ("Really, TryCatchHCF? We're not even in the first function yet!"
 # Yeah, I know. So, back to the kludge - various files are co-resident in the 
 # subdomain_randomizer_scripts/ directory, and we just read them all in. The actual
-# cipher files lack a "." anywhere in their filename, so if we remove all filenames 
+# cipher files lack a "." anywhere in their filename, so if we don't add filenames 
 # that contain ".", we'll have a list of only ciphers for the user to pick from.
 
-for dirFile in gRandomSubdomainFQDNCipherFiles:
-	if "." in dirFile:
-		gRandomSubdomainFQDNCipherFiles.remove( dirFile )
+gRandomSubdomainFQDNCipherFiles  = []
+for root, dirs, files in os.walk( gFilepathRandomizedSubdomainFQDN ):
+	for file in files:
+		if '.' not in file:
+			gRandomSubdomainFQDNCipherFiles.append( file )
+
+gRandomSubdomainFQDNCipherFiles.sort()
 
 # Load list of FQDN Subdomain Randomizer scripts
 
 gSubdomainRandomizerScripts = []
 for root, dirs, files in os.walk( gFilepathRandomizedSubdomainFQDN ):
-        for file in files:
-                if file.endswith('.py'):
-                        gSubdomainRandomizerScripts.append( file )
+	for file in files:
+		if file.endswith('.py'):
+			gSubdomainRandomizerScripts.append( file )
+
+gSubdomainRandomizerScripts.sort()
 
 
 #========================================================================
