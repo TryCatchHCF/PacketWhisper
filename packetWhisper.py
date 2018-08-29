@@ -708,6 +708,12 @@ def ExtractCapturedPayload():
 	print ""
 	print "====  Extract & Decloakify a Cloaked File  ===="
 	print ""
+	print "IMPORTANT: Be sure the file is actually in PCAP format."
+	print "If you used Wireshark to capture the packets, there's"
+	print "a chance it was saved in 'PCAP-like' format, which won't"
+	print "here. If you have problems, be sure that tcpdump/WinDump"
+	print "can read it manually:   tcpdump -r myfile.pcap"
+	print ""
 	pcapFile = raw_input( "Enter PCAP filename: " )
 	print ""
 	print "What OS are you currently running on?"
