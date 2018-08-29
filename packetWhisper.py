@@ -586,7 +586,7 @@ def ExtractDNSQueriesFromPCAP( pcapFile, osStr ):
 
 #========================================================================
 #
-# ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag )
+# ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag, isRandomized )
 #
 # The fun stuff. Identify the PacketWhisper FQDN ciphers in the 
 # collection of DNS queries, and reconstruct the Cloakified payload file
@@ -600,7 +600,7 @@ def ExtractDNSQueriesFromPCAP( pcapFile, osStr ):
 #
 #========================================================================
 
-def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag ):
+def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag, isRandomized ):
 
 	cloakedFilename = "cloaked.payload"
 
@@ -640,6 +640,8 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag 
 	# corresponding cipher string to the cloaked payload file, because
 	# inference. \o/
 
+	previousSubdomain = ""
+
 	for dnsQuery in queries:
 
 		# DEBUG
@@ -670,7 +672,22 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag 
 					# DEBUG
 					#print cipherElement,
 
-					cloakedFile.write( cipherElement )
+					queryElements = dnsQuery.split()	
+					fqdnElements = queryElements[ 7 ].split( '.' )
+					subdomain = fqdnElements[ 0 ]
+
+					# Don't write out duplicate subdomains if cipher was
+					# randomized, since that means it's a duplicate DNS query
+					if isRandomized and subdomain != previousSubdomain:
+
+						cloakedFile.write( cipherElement )
+
+					elif not isRandomized:
+			
+						cloakedFile.write( cipherElement )
+
+					previousSubdomain = subdomain
+
 
 	queriesFile.close()
 	cipherFile.close()
@@ -742,16 +759,27 @@ def ExtractCapturedPayload():
 
 	cipherTag = ""
 
+	# isRandomized lets us track if the cipher is randomized and therefore
+	# for all practical purposes there will never be adjacent duplicate 
+	# FQDNs in the PCAP file. Turns out this is a really simple way of
+	# preventing duplicate DNS queries
+
+	isRandomized = "False"
+
 	# For Random Subdomain FQDN ciphers, use the base domain name as extra filter
+	# For Common FQDN ciphers, use the IP address that sent the knock sequence
 
 	if ( akstatStr in cipherFilePath ):
 		cipherTag = akstatStr;
+		isRandomized = "True"
 
 	elif ( cloudfrontStr in cipherFilePath ):
 		cipherTag = cloudfrontStr;
+		isRandomized = "True"
 
 	elif ( optimizelyStr in cipherFilePath ):
 		cipherTag = optimizelyStr;
+		isRandomized = "True"
 
 	elif ( commonFQDNStr in cipherFilePath ):
 		cipherTag = commonFQDNStr
@@ -775,7 +803,7 @@ def ExtractCapturedPayload():
 
 			return
 
-	cloakedFile = ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilePath, cipherTag )
+	cloakedFile = ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilePath, cipherTag, isRandomized )
 
 	# Decloakify file
 
