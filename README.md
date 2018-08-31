@@ -37,7 +37,7 @@ Which you capture as a PCAP file anywhere along the DNS resolution path, and the
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperExtractPayload.png></img>
 
 # Tutorial
-See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. The slides present background on DNS exfiltration, text-based steganography / Cloakify Toolset, and how PacketWhisper combines them all into a method for transferring data. I specifically created the slides to be useful on their own, so the background and information should be complete. However you can also view the video of my DC26 Packet Hacking Village presentation which provides additional context. [NOTE: Video should be online sometime in September, at which points I'll add the URL here.]
+See the DEF CON 26 slides (included in project) from my Packet Hacking Village presentation. The slides present background on DNS exfiltration, text-based steganography / Cloakify Toolset, and how PacketWhisper combines them all into a method for transferring data. I specifically created the slides to be useful on their own, so the background and information should be complete. However you can also view the video of my DC26 Packet Hacking Village presentation which provides additional context. [NOTE: Video should be online sometime in September, at which point I'll add the URL here.]
 
 I've included a sample PCAP file in the project (cleverly named "sample.pcap") that contains separate payloads for each of the ciphers. They could have been any filetype, of course, but in this case I just transmitted text files into the PCAP. Load it up in PacketWhisper and give it a try!
 
