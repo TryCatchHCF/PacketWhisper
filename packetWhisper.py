@@ -611,9 +611,12 @@ def GenerateDNSQueries( cloakedFile, queryDelay ):
 
 			fqdnStr = fqdn.strip()
 			
-			ret = subprocess.check_output( ['nslookup', fqdnStr] )
-
-			time.sleep( queryDelay )   
+			# We don't care if the lookup fails, so carry on
+			try:
+				ret = subprocess.check_output( ['nslookup', fqdnStr] )
+				time.sleep( queryDelay )   
+			except:
+				time.sleep( queryDelay )   
 		
 			checkpoint = byteCount % 25
 
