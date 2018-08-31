@@ -122,7 +122,16 @@ def CloakAndTransferFile():
 	choice = raw_input( "Press return to continue... " )
 	print ""
 
-	choice = raw_input( "Begin PacketWhisper transfer of cloaked file? (y/n): " )
+	invalidSelection = True
+
+	while ( invalidSelection ):
+
+		choice = raw_input( "Begin PacketWhisper transfer of cloaked file? (y/n): " )
+
+		if choice == "y" or choice == "n":
+
+			invalidSelection = False
+			
 
 	if choice == "y":
 
@@ -155,6 +164,9 @@ def CloakAndTransferFile():
 
 		if ( gCommonFQDNCipherSelected == True ):
 
+			print ""
+			print "Sending Knock Sequence - Begin"
+			print ""
 			TransferCloakedFile( gKnockSequenceFilename, queryDelay )
 
 		TransferCloakedFile( cloakedFile, queryDelay )
@@ -164,6 +176,9 @@ def CloakAndTransferFile():
 
 		if ( gCommonFQDNCipherSelected == True ):
 
+			print ""
+			print "Sending Knock Sequence - End"
+			print ""
 			TransferCloakedFile( gKnockSequenceFilename, queryDelay )
 
 	choice = raw_input( "Press return to continue... " )
@@ -282,7 +297,7 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 		print ""
 		print "1) Random Subdomain FQDNs  (Recommended - avoids DNS caching, overcomes NAT)"
 		print "2) Unique Repeating FQDNs  (DNS may cache, but overcomes NAT)"
-		print "3) Common Website FQDNs    (DNS caching may block, NAT interferes)"
+		print "3) [DISABLED] Common Website FQDNs    (DNS caching may block, NAT interferes)"
 		print "4) Help"
 		print ""
 	
@@ -292,7 +307,12 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 			try:
 				choice = int( raw_input( "Selection: " ))
 	
-				if ( choice > 0 and choice < 5 ):
+				if choice == 3:
+					print ""
+					print "Temporarily Disabled: Common Website FQDNs"
+					print "Pardon the inconvenience it will be updated soon."
+					print ""
+				elif ( choice > 0 and choice < 5 ):
 					invalidSelection = 0
 				else:
 					print selectionErrorMsg
@@ -903,7 +923,7 @@ def SelectCipherForExtraction():
 		print ""
 		print "1) Random Subdomain FQDNs  (example: d1z2mqljlzjs58.cloudfront.net)"
 		print "2) Unique Repeating FQDNs  (example: John.Whorfin.yoyodyne.com)"
-		print "3) Common Website FQDNs    (example: www.youtube.com)"
+		print "3) [DISABLED] Common Website FQDNs    (example: www.youtube.com)"
 		print ""
 	
 		invalidSelection = 1
@@ -912,7 +932,12 @@ def SelectCipherForExtraction():
 			try:
 				choice = int( raw_input( "Selection: " ))
 	
-				if ( choice > 0 and choice < 4 ):
+				if choice == 3:
+					print ""
+					print "Temporarily Disabled: Common Website FQDNs"
+					print "Pardon the inconvenience it will be updated soon."
+					print ""
+				elif ( choice > 0 and choice < 4 ):
 					invalidSelection = 0
 				else:
 					print selectionErrorMsg
