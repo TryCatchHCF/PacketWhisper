@@ -108,14 +108,16 @@ Example Points of Capture:<br>
 - Network infrastructure outside of the organization<br>
 - Network tap anywhere along the query path<br>
 
-<b>NOTE: VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries unless you can capture upstream from the VPN exit node. Even capturing on the same system will fail. Since many of you are probably using VPNs, if you want to test out PacketWhisper, try transmitting from a hosted virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
-
 Use your imagination. Any device along the DNS resolution path is an option, including wall displays. "Wait, what?"
 
 <img src=https://github.com/TryCatchHCF/PacketWhisper/blob/master/screenshots/PacketWhisperWallDisplayCapture.png></img>
 
+<b>NOTE: VPN connections block visibility between host and VPN exit node.</b> If the client you're transferring from has an active VPN connection, you won't be able to see any DNS queries unless you can capture upstream from the VPN exit node. Even capturing on the same system will fail. Since many of you are probably using VPNs, if you want to test out PacketWhisper, try transmitting from a hosted virtual machine (VM) and capture the traffic on the VM's network interface on the host system.
+
 # Extracting The Payload
 Once you've captured the pcap file, recover the payload by running PacketWhisper on a system that has tcpdump (included on Linux & MacOS) or <a href="https://www.winpcap.org">WinDump</a> (Windows) installed. PacketWhisper will ask you which cipher was used, then extract the payload from the pcap, and finally decode the extracted payload with the matching cipher.
+
+<b>Important note:</b> Within the same PCAP, you can transmit one payload per cipher used. A PCAP containing more than one payload using the same cipher will cause problems. For example my supplied 'example.pcap' file contains 5 payloads, one for each of the operational ciphers currently available. If one of the payloads had used the same cipher as another one, PacketWhisper will fail to extract either of them. The easy fix is to break up the PCAP file (this is why the PacketWhisper transmit code prints out the UTC date-time when starting and ending transmission). I'm working on allowing multiple payloads using the same cipher, solution is already in place, I just need to get around to it. 
 
 # Limitations / Use Notes
 
@@ -139,3 +141,4 @@ I'll be adding modes for MDNS and LLMNR local network DNS broadcast modes. These
 
 I'll also add more ciphers, but for day-to-day needs the current cipher collection is all I've ever needed. You'll get good mileage out of them.
 
+I'm also working on allowing multiple payloads using the same cipher in a single PCAP file. Solution is already prototyped, but it makes the PCAP extraction workflow uglier for the user. Operationally it might be more trouble that it's worth. I always prefer cleaner ops functionality than Swiss army knife complexity.
