@@ -1,6 +1,8 @@
 # PacketWhisper
 PacketWhisper - Stealthily Transfer Data & Defeat Attribution Using DNS Queries & Text-Based Steganography, without the need for attacker-controlled Name Servers or domains; Evade DLP/MLS Devices; Defeat Data- & DNS Name Server Whitelisting Controls. Convert any file type (e.g. executables, Office, Zip, images) into a list of Fully Qualified Domain Names (FQDNs), use DNS queries to transfer data. Simple yet extremely effective.
 
+(Update 05/27/2020: Yes, I'll be migrating all of my Github projects to Python3 over the summer of 2020.)
+
 # Author
 Joe Gervais (TryCatchHCF)
 
