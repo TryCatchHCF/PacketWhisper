@@ -57,7 +57,9 @@
 #   $ python packetWhisper.py
 #
 
+import distutils.spawn
 import os, subprocess, sys, getopt, socket, re, random, datetime, time, cloakify, decloakify
+import platform
 
 # Set name of knock sequence string (this is only used when transmitting Common FQDN ciphers)
 
@@ -631,33 +633,32 @@ def GenerateDNSQueries( cloakedFile, queryDelay ):
 
 #========================================================================
 #
-# ExtractDNSQueriesFromPCAP( pcapFile, osStr )
+# ExtractDNSQueriesFromPCAP( pcapFile )
 #
 # Creates a textfile with all of the DNS queries (UDP Port 53). Makes a
-# system call to either tcpdump or windump, depending on the OS selected
-# by the user.
+# system call to either tcpdump or windump, depending on the OS detected.
 #
 #========================================================================
 
-def ExtractDNSQueriesFromPCAP( pcapFile, osStr ):
+def ExtractDNSQueriesFromPCAP( pcapFile ):
 
 	dnsQueriesFilename = "dnsQueries.txt"
+        osStr = platform.system()
 
-	if ( osStr == "Linux" ):
-
-		commandStr = "tcpdump -r " + pcapFile + " udp port 53 > " + dnsQueriesFilename
-
-		os.system( commandStr )
-
+	if ( osStr in  ["Linux", "Darwin"] ):
+                dump = "tcpdump"
 	elif ( osStr == "Windows" ):
-
-		commandStr = "windump -r " + pcapFile + " udp port 53 > " + dnsQueriesFilename
-
-		os.system( commandStr )
-
+                dump = "windump"
 	else:
 		print "!!! Error: Unknown OS received by ExtractDNSQueriesFromPCAP(), this shouldn't have happened. Oops."
 
+        binary = distutils.spawn.find_executable(dump)
+        if not binary:
+            sys.exit("{} not found. Please install required package".format(dump))
+
+        commandStr = dump + " -r " + pcapFile + " udp port 53 > " + dnsQueriesFilename
+
+        os.system( commandStr )
 
 	return dnsQueriesFilename
 
@@ -812,19 +813,8 @@ def ExtractCapturedPayload():
 	print ""
 	pcapFile = raw_input( "Enter PCAP filename: " )
 	print ""
-	print "What OS are you currently running on?"
-	print ""
-	print "1) Linux/Unix/MacOS"
-	print "2) Windows"
-	print ""
-	osHost = raw_input( "Select OS [1 or 2]: " )
 
-	if osHost == "2":
-		osStr = "Windows"
-	else:
-		osStr = "Linux"
-
-	dnsQueriesFilename = ExtractDNSQueriesFromPCAP( pcapFile, osStr );
+	dnsQueriesFilename = ExtractDNSQueriesFromPCAP( pcapFile );
 
 	cipherFilePath = SelectCipherForExtraction()
 
