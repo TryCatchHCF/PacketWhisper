@@ -992,7 +992,7 @@ def GetSourceIPViaKnockSequence( dnsQueriesFilename ):
 
 	except:
 		print ""
-		print "!!! Oh noes! Problem reading '", dnsQueriesFile, "'"
+		print "!!! Oh noes! Problem reading '", dnsQueriesFilename, "'"
 		print "!!! Verify the location of the DNS queries file" 
 		print ""
 		return
